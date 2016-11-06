@@ -1,5 +1,9 @@
 #pragma once
 
+#define GLEW_STATIC
+#include <GL\glew.h>
+#include <GLFW\glfw3.h>
+
 class Game
 {
 public:
@@ -9,8 +13,10 @@ public:
 	void run();
 
 private:
-	
+	// Attributes
+	GLFWwindow* _window;
+
 	// Methods
-	void init();
+	int init();
 	void gameLoop();
 };

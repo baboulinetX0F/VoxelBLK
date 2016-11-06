@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Renderer.h"
+#define GLEW_STATIC
+#include <GL\glew.h>
+#include <GLFW\glfw3.h>
 
 class Game
 {
@@ -12,7 +14,7 @@ public:
 
 private:
 	// Attributes
-	Renderer* _renderer;
+	GLFWwindow* _window;
 
 	// Methods
 	int init();

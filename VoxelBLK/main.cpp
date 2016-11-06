@@ -1,7 +1,10 @@
 #include <iostream>
 
+#include "Game.h"
+
 int main(int argc, char** argv)
 {
-	std::cout << "Hello World\n";
+	Game* game = new Game();
+	game->run();
 	return 0;
 }

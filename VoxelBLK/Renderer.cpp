@@ -53,6 +53,7 @@ GLFWwindow * Renderer::getWindow()
 
 void Renderer::beginFrame()
 {
+	calculateFrameTime();
 	glfwPollEvents();
 	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -84,4 +85,17 @@ void Renderer::RenderMesh(Mesh * mesh)
 	glBindVertexArray(mesh->getVAO());	
 	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());	
 	glBindVertexArray(0);
+}
+
+void Renderer::calculateFrameTime()
+{
+	double currentTime = glfwGetTime();
+	_nbFrames++;
+	if (currentTime - _lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+										 // printf and reset timer
+		double frameTime = 1000.0 / double(_nbFrames);
+		printf("%f ms/frame | %f fps\n", frameTime, 1000/frameTime);
+		_nbFrames = 0;
+		_lastTime += 1.0;
+	}
 }

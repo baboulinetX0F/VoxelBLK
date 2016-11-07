@@ -36,8 +36,8 @@ void Game::gameLoop()
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();
-		shad.Use();
 
+		shad.Use();
 		_renderer->RenderMesh(mesh);
 
 		_renderer->endFrame();		

@@ -25,5 +25,12 @@ public:
 
 private:
 	GLFWwindow* _window;
+
+	// for frametime calculation
+	double _lastTime;
+	int _nbFrames;
+
+	// Methods
+	void calculateFrameTime();
 };
 

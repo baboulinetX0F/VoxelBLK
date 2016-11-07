@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+
 Renderer::Renderer()
 {
 	if (!glfwInit()) {
@@ -60,4 +61,27 @@ void Renderer::beginFrame()
 void Renderer::endFrame()
 {
 	glfwSwapBuffers(_window);
+}
+
+void Renderer::LoadMesh(Mesh * mesh)
+{
+	GLfloat* data = mesh->verticesToArray();
+	glBindVertexArray(mesh->getVAO());
+	glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBO());
+	glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() *(VERTEX_COMPONENT_COUNT * sizeof(GLfloat)), data, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void Renderer::UnloadMesh(Mesh * mesh)
+{
+}
+
+void Renderer::RenderMesh(Mesh * mesh)
+{
+	glBindVertexArray(mesh->getVAO());	
+	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());	
+	glBindVertexArray(0);
 }

@@ -4,6 +4,9 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 
+#include "Shader.h"
+#include "Mesh.h"
+
 class Renderer
 {
 public:
@@ -15,6 +18,10 @@ public:
 
 	void beginFrame();
 	void endFrame();
+
+	void LoadMesh(Mesh* mesh);
+	void UnloadMesh(Mesh* mesh);
+	void RenderMesh(Mesh* mesh);
 
 private:
 	GLFWwindow* _window;

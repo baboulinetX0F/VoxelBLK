@@ -210,3 +210,8 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/deps
+/VoxelBLK/.#default.vert
+/VoxelBLK/#default.vert#
+/VoxelBLK.VC.VC.opendb
+/VoxelBLK.VC.db

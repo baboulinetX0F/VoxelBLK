@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Shader.h"
+
 Game::Game()
 {
 }
@@ -20,6 +22,11 @@ void Game::init()
 {
 	_renderer = new Renderer();
 	_renderer->initWindow("VoxelBLK", 800, 600);
+}
+
+void Game::gameLoop()
+{
+	Shader shad = Shader("default.vert", "default.frag");
 
 	// Render test
 	GLfloat data[]
@@ -38,13 +45,14 @@ void Game::init()
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-}
 
-void Game::gameLoop()
-{
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();
+		shad.Use();
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
 		_renderer->endFrame();		
 	}
 }

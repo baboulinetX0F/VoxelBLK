@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <gtc\type_ptr.hpp>
+
 
 Renderer::Renderer()
 {
@@ -51,6 +53,16 @@ GLFWwindow * Renderer::getWindow()
 	return _window;
 }
 
+void Renderer::setWindowSize(int width, int height)
+{
+  glfwSetWindowSize(_window,width,height);
+}
+
+void Renderer::setWindowTitle(const char* title)
+{
+  glfwSetWindowTitle(_window,title);
+}
+
 void Renderer::beginFrame()
 {
 	calculateFrameTime();
@@ -82,9 +94,31 @@ void Renderer::UnloadMesh(Mesh * mesh)
 
 void Renderer::RenderMesh(Mesh * mesh)
 {
+	_defaultShader->Use();
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1, GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
+	glm::mat4 model = glm::mat4();
+	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 1.0f));
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(mesh->getVAO());	
 	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());	
 	glBindVertexArray(0);
+}
+
+void Renderer::initCamera()
+{
+	_camera = new Camera();
+	_projection = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
+}
+
+Camera * Renderer::getCamera()
+{
+	return _camera;
+}
+
+void Renderer::initDefaultShader()
+{
+	_defaultShader = new Shader("shaders/default_camera.vert", "shaders/default.frag");
 }
 
 void Renderer::calculateFrameTime()

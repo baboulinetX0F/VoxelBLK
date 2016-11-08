@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "Input.h"
 
 Game::Game()
 {
@@ -21,11 +22,14 @@ void Game::init()
 {
 	_renderer = new Renderer();
 	_renderer->initWindow("VoxelBLK", 800, 600);
+	_renderer->initDefaultShader();
+	_renderer->initCamera();
+	Input::initInput(_renderer);
 }
 
 void Game::gameLoop()
 {
-	Shader shad = Shader("default.vert", "default.frag");
+	//Shader shad = Shader("default.vert", "default.frag");
 
 	Mesh* mesh = new Mesh();
 	mesh->addVertex(glm::vec3(-0.5f, -0.5f, 1.0f));
@@ -37,7 +41,7 @@ void Game::gameLoop()
 	{
 		_renderer->beginFrame();
 
-		shad.Use();
+		//shad.Use();
 		_renderer->RenderMesh(mesh);
 
 		_renderer->endFrame();		

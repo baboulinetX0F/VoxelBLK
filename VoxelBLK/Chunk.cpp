@@ -60,11 +60,11 @@ void Chunk::generateMesh()
 				if (_blocks[x][y][z].isActive()) {					
 					// Back face
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z));
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f -y, - 0.5f + z));
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z));
 					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z));
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z));
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z));
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z));
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z));
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z));
 
 					//Front face
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z));

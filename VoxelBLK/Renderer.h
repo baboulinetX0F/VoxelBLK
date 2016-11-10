@@ -34,8 +34,10 @@ public:
 
 private:
 	GLFWwindow* _window;
+	int _windowWidth, _windowHeight;
 	Camera* _camera;
 	glm::mat4 _projection;
+
 	Shader* _defaultShader;
 
 	// for frametime calculation

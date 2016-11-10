@@ -43,9 +43,16 @@ void Renderer::initWindow(const char * title, int width, int height)
 
 	glewExperimental = GL_TRUE;
 
+	glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
+
 	int vp_width, vp_height;
 	glfwGetFramebufferSize(_window, &vp_width, &vp_height);
 	glViewport(0, 0, vp_width, vp_height);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -56,6 +63,7 @@ GLFWwindow * Renderer::getWindow()
 void Renderer::setWindowSize(int width, int height)
 {
   glfwSetWindowSize(_window,width,height);
+  glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
 }
 
 void Renderer::setWindowTitle(const char* title)
@@ -68,7 +76,7 @@ void Renderer::beginFrame()
 	calculateFrameTime();
 	glfwPollEvents();
 	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::endFrame()
@@ -90,6 +98,7 @@ void Renderer::LoadMesh(Mesh * mesh)
 
 void Renderer::UnloadMesh(Mesh * mesh)
 {
+	// TODO : Implement UnloadMesh
 }
 
 void Renderer::RenderMesh(Mesh * mesh)
@@ -108,7 +117,7 @@ void Renderer::RenderMesh(Mesh * mesh)
 void Renderer::initCamera()
 {
 	_camera = new Camera();
-	_projection = glm::perspective(45.0f, (GLfloat)800 / (GLfloat)600, 0.1f, 100.0f);
+	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight, 0.1f, 100.0f);
 }
 
 Camera * Renderer::getCamera()

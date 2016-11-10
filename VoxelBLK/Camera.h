@@ -28,10 +28,11 @@ public:
 	GLfloat _yaw;
 	GLfloat _pitch;
 	GLfloat _moveSpeed;
-	GLfloat _mouseSensitivity;
+	GLfloat _mouseSensitivity;	
 
+	// TODO : Smoother mouvement with deltatime
 	Camera();
-	void processKeyboard(CameraDirection dir);
+	void processKeyboard(CameraDirection dir);	
 	void processMouse(GLfloat x_offset, GLfloat y_offset);
 	glm::mat4 getViewMatrix();
 

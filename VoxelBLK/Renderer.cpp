@@ -50,9 +50,9 @@ void Renderer::initWindow(const char * title, int width, int height)
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -75,7 +75,7 @@ void Renderer::beginFrame()
 {
 	calculateFrameTime();
 	glfwPollEvents();
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.258f, 0.523f, 0.95f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

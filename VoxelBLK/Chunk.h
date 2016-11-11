@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "Block.h"
 
-static const int CHUNK_SIZE = 16;
+static const int CHUNK_SIZE = 4;
 
 enum DEBUG_CHUNK
 {
@@ -26,6 +26,9 @@ class Chunk
  private:
   Block _blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]; 
   Mesh* _mesh;
+    
 
-  void generateMesh();
+private:
+	void generateMesh();
+	bool block_visible(int x, int y, int z);
 };

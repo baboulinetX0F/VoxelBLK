@@ -13,13 +13,13 @@ public:
 	Block();
 	~Block();
 
-	bool isActive();
+	bool isActive();	
 	BlockType getType();
 
 	void setActive(bool state);
 
 private:
-	bool _active;
+	bool _active;	
 	BlockType _type;
 };
 

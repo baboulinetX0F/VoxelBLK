@@ -57,7 +57,7 @@ void Chunk::generateMesh()
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				if (_blocks[x][y][z].isActive()) {					
+				if (_blocks[x][y][z].isActive() && block_visible(x,y,z)) {
 					// Back face
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z));
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z));
@@ -109,4 +109,22 @@ void Chunk::generateMesh()
 			}
 		}
 	}
+}
+
+bool Chunk::block_visible(int x, int y, int z)
+{
+	// UNDONE : calculate visiblty block
+	if (x > 0 && x < CHUNK_SIZE && y > 0 && y < CHUNK_SIZE && z > 0 && z < CHUNK_SIZE)
+	{
+		if (_blocks[x + 1][y][z].isActive() && _blocks[x - 1][y][z].isActive()
+			&& _blocks[x][y + 1][z].isActive() && _blocks[x][y - 1][z].isActive())
+		{
+			return false;
+		}
+		else
+			return true;
+		
+	}
+	else
+		return true;
 }

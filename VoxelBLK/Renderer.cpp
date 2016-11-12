@@ -9,7 +9,7 @@ Renderer::Renderer()
 {
 	if (!glfwInit()) {
 		std::cerr << "ERROR : Cannot init glfw" << std::endl;
-	}
+	}	
 }
 
 Renderer::~Renderer()
@@ -72,7 +72,7 @@ void Renderer::setWindowTitle(const char* title)
 }
 
 void Renderer::beginFrame()
-{
+{	
 	calculateFrameTime();
 	glfwPollEvents();
 	glClearColor(0.258f, 0.523f, 0.95f, 1.0f);
@@ -90,8 +90,10 @@ void Renderer::LoadMesh(Mesh * mesh)
 	glBindVertexArray(mesh->getVAO());
 	glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBO());
 	glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() *(VERTEX_COMPONENT_COUNT * sizeof(GLfloat)), data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
@@ -110,7 +112,7 @@ void Renderer::RenderMesh(Mesh * mesh)
 	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(mesh->getVAO());	
-	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());	
+	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
 	glBindVertexArray(0);
 }
 
@@ -130,14 +132,19 @@ void Renderer::initDefaultShader()
 	_defaultShader = new Shader("shaders/default_camera.vert", "shaders/default.frag");
 }
 
+void Renderer::printDebugInfos()
+{
+	printf("%f ms/frame | %f fps\n", _frameTime, 1000 / _frameTime);
+}
+
 void Renderer::calculateFrameTime()
 {
 	double currentTime = glfwGetTime();
-	_nbFrames++;
+	_nbFrames++;	
 	if (currentTime - _lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
 										 // printf and reset timer
-		double frameTime = 1000.0 / double(_nbFrames);
-		printf("%f ms/frame | %f fps\n", frameTime, 1000/frameTime);
+		_frameTime = 1000.0 / double(_nbFrames);
+		this->printDebugInfos();		
 		_nbFrames = 0;
 		_lastTime += 1.0;
 	}

@@ -40,11 +40,13 @@ private:
 
 	Shader* _defaultShader;
 
-	// for frametime calculation
+	// debug attributes (frametime, drawcalls etc...)
 	double _lastTime;
 	int _nbFrames;
-
+	double _frameTime;
+	
 	// Methods
-	void calculateFrameTime();	
+	void printDebugInfos();
+	void calculateFrameTime();
 };
 

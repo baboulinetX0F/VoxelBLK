@@ -40,6 +40,6 @@ void Game::gameLoop()
 
 		chunk->renderChunk(_renderer);
 
-		_renderer->endFrame();		
+		_renderer->endFrame();
 	}
 }

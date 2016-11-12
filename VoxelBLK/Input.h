@@ -5,7 +5,7 @@
 namespace Input
 {
 	static Camera* _mainCamera = nullptr;
-	static int lastX, lastY;
+	static double lastX, lastY;
 	static bool firstMouse;
 	
 

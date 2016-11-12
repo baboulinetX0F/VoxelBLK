@@ -31,4 +31,5 @@ class Chunk
 private:
 	void generateMesh();
 	bool block_visible(int x, int y, int z);
+	int blocksGenerated;
 };

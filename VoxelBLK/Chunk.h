@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "Block.h"
 
-static const int CHUNK_SIZE = 4;
+static const int CHUNK_SIZE = 16;
 
 enum DEBUG_CHUNK
 {

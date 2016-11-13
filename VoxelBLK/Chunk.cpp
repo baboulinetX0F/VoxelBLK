@@ -62,13 +62,10 @@ void Chunk::generateMesh()
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				if (_blocks[x][y][z].isActive()) {
+				// TODO : Merge vertices of blocks next to each other
+				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
 					
-					glm::vec4 color;
-					if (block_visible(x, y, z))
-						color = glm::vec4(1.0f,0.0f,0.0f,1.0f);
-					else
-						color = MESH_DEFAULT_COLOR;
+					glm::vec4 color = MESH_DEFAULT_COLOR;
 					
 					// Back face
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z),color);
@@ -127,10 +124,10 @@ void Chunk::generateMesh()
 
 bool Chunk::block_visible(int x, int y, int z)
 {
-	// TODO : Calculate Block Visibility
+	// UNDONE : Calculate Block Visibility for y & z axis
 	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< CHUNK_SIZE-1 && z > 0 && z< CHUNK_SIZE - 1) {
 		if (_blocks[x + 1][y][z].isActive() && _blocks[x - 1][y][z].isActive()) {
-			std::cout << "BLOCK " << x << ":" << y << ":" << z << " SURROUNDED\n";
+			//std::cout << "BLOCK " << x << ":" << y << ":" << z << " SURROUNDED\n";
 			return false;
 		}
 	}

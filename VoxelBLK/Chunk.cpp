@@ -35,7 +35,7 @@ void Chunk::DEBUG_fillChunk(DEBUG_CHUNK fill)
 	srand(time(NULL));
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
-		for (int y = 0; y < CHUNK_SIZE; y++)
+		for (int y = 0; y < WORLD_HEIGHT; y++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
@@ -58,7 +58,7 @@ void Chunk::generateMesh()
 {
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
-		for (int y = 0; y < CHUNK_SIZE; y++)
+		for (int y = 0; y < WORLD_HEIGHT; y++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
@@ -125,7 +125,7 @@ void Chunk::generateMesh()
 bool Chunk::block_visible(int x, int y, int z)
 {
 	// UNDONE : Calculate Block Visibility for y & z axis
-	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< CHUNK_SIZE-1 && z > 0 && z< CHUNK_SIZE - 1) {
+	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< WORLD_HEIGHT - 1 && z > 0 && z< CHUNK_SIZE - 1) {
 		if (_blocks[x + 1][y][z].isActive() && _blocks[x - 1][y][z].isActive()) {
 			//std::cout << "BLOCK " << x << ":" << y << ":" << z << " SURROUNDED\n";
 			return false;

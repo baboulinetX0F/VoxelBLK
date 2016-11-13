@@ -3,7 +3,8 @@
 #include "Renderer.h"
 #include "Block.h"
 
-static const int CHUNK_SIZE = 16;
+static const int CHUNK_SIZE = 4;
+static const int WORLD_HEIGHT = 256;
 
 enum DEBUG_CHUNK
 {
@@ -24,7 +25,7 @@ class Chunk
   void DEBUG_fillChunk(DEBUG_CHUNK fill);
   
  private:
-  Block _blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]; 
+  Block _blocks[CHUNK_SIZE][WORLD_HEIGHT][CHUNK_SIZE]; 
   Mesh* _mesh;
     
 

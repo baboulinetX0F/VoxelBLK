@@ -50,9 +50,9 @@ void Renderer::initWindow(const char * title, int width, int height)
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 GLFWwindow * Renderer::getWindow()

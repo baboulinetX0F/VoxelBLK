@@ -6,6 +6,8 @@
 Chunk::Chunk()
 {
   _mesh = new Mesh();
+  _blocksCount = 0;
+  _loaded = false;
 }
 
 Chunk::~Chunk()
@@ -13,21 +15,33 @@ Chunk::~Chunk()
 
 }
 
+bool Chunk::isLoaded()
+{
+	return _loaded;
+}
+
 void Chunk::loadChunk(Renderer* renderer)
 {
 	generateMesh();
-	std::cout << "CHUNK : " << blocksGenerated << " blocks generated\n";
+	std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
 	renderer->LoadMesh(_mesh);
+	_loaded = true;
 }
 
 void Chunk::unloadChunk(Renderer * renderer)
 {
 	renderer->UnloadMesh(_mesh);
+	_loaded = false;
 }
 
 void Chunk::renderChunk(Renderer * renderer)
 {
 	renderer->RenderMesh(_mesh);
+}
+
+void Chunk::renderChunk(Renderer * renderer, glm::mat4 model)
+{
+	renderer->RenderMesh(_mesh,model);
 }
 
 void Chunk::DEBUG_fillChunk(DEBUG_CHUNK fill)
@@ -115,7 +129,7 @@ void Chunk::generateMesh()
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
 
-					blocksGenerated++;
+					_blocksCount++;
 				}
 			}
 		}

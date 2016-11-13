@@ -8,6 +8,12 @@
 #include "Mesh.h"
 #include "Camera.h"
 
+enum RenderMode
+{
+	RENDER_WIREFRAME,
+	RENDER_FILL
+};
+
 class Renderer
 {
 public:
@@ -25,7 +31,11 @@ public:
 	// Methods related to mesh
 	void LoadMesh(Mesh* mesh);
 	void UnloadMesh(Mesh* mesh);
-	void RenderMesh(Mesh* mesh);
+	void RenderMesh(Mesh* mesh, glm::mat4 model, Shader* shader);
+	void RenderMesh(Mesh* mesh);	
+	void RenderMesh(Mesh* mesh, glm::mat4 model);
+
+	void setRenderMode(RenderMode mode);
 
 	void initCamera();
 	Camera* getCamera();

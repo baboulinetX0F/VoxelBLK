@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer.h"
+#include "ChunkManager.h"
 
 class Game
 {
@@ -13,6 +14,7 @@ public:
 private:
 	// Attributes
 	Renderer* _renderer;
+	ChunkManager* _chunkManager;
 
 	// Methods
 	void init();

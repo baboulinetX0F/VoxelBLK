@@ -50,9 +50,7 @@ void Renderer::initWindow(const char * title, int width, int height)
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_CULL_FACE);	
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -103,17 +101,39 @@ void Renderer::UnloadMesh(Mesh * mesh)
 	// TODO : Implement UnloadMesh
 }
 
-void Renderer::RenderMesh(Mesh * mesh)
+void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 {
-	_defaultShader->Use();
+	shader->Use();
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1, GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
-	glm::mat4 model = glm::mat4();
-	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-	glBindVertexArray(mesh->getVAO());	
+	glBindVertexArray(mesh->getVAO());
 	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
 	glBindVertexArray(0);
+}
+
+void Renderer::RenderMesh(Mesh * mesh)
+{
+	glm::mat4 model = glm::mat4();
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	RenderMesh(mesh, model, _defaultShader);
+}
+
+void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model)
+{	
+	RenderMesh(mesh, model, _defaultShader);
+}
+
+void Renderer::setRenderMode(RenderMode mode)
+{
+	switch (mode)
+	{
+	case RENDER_WIREFRAME:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		break;
+	case RENDER_FILL:
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 void Renderer::initCamera()

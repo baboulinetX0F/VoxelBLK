@@ -4,7 +4,7 @@
 #include "Block.h"
 
 static const int CHUNK_SIZE = 8;
-static const int WORLD_HEIGHT = 4;
+static const int WORLD_HEIGHT = 8;
 
 enum DEBUG_CHUNK
 {

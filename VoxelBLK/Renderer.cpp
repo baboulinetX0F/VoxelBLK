@@ -50,7 +50,7 @@ void Renderer::initWindow(const char * title, int width, int height)
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);	
+	//glEnable(GL_CULL_FACE);	
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -109,6 +109,7 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(mesh->getVAO());
 	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
+	_debugTmp = mesh->getVertices().size();
 	glBindVertexArray(0);
 }
 
@@ -139,7 +140,7 @@ void Renderer::setRenderMode(RenderMode mode)
 void Renderer::initCamera()
 {
 	_camera = new Camera();
-	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight, 0.1f, 100.0f);
+	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight, 0.1f, 50.0f);
 }
 
 Camera * Renderer::getCamera()
@@ -154,7 +155,7 @@ void Renderer::initDefaultShader()
 
 void Renderer::printDebugInfos()
 {
-	printf("%f ms/frame | %f fps\n", _frameTime, 1000 / _frameTime);
+	printf("%f ms/frame | %f fps | %d vertices rendered\n", _frameTime, 1000 / _frameTime, _debugTmp);
 }
 
 void Renderer::calculateFrameTime()

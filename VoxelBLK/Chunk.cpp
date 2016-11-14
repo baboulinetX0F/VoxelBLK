@@ -70,6 +70,7 @@ void Chunk::DEBUG_fillChunk(DEBUG_CHUNK fill)
 
 void Chunk::generateMesh()
 {
+	srand(time(NULL));
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int y = 0; y < WORLD_HEIGHT; y++)
@@ -78,57 +79,95 @@ void Chunk::generateMesh()
 			{
 				// TODO : Merge vertices of blocks next to each other
 				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
-					
-					glm::vec4 color = MESH_DEFAULT_COLOR;
-					
+
+					//glm::vec4 color = MESH_DEFAULT_COLOR;
+					glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
+
+					bool top,down,left,right,front,back;
+					if (y == 0)
+						top = false;
+					else
+						top = _blocks[x][y + 1][z].isActive();
+					if (y == WORLD_HEIGHT - 1)
+						down = false;
+					else
+						down = _blocks[x][y - 1][z].isActive();
+					if (x == 0)
+						left = false;
+					else
+						left = _blocks[x-1][y][z].isActive();
+					if (x == CHUNK_SIZE - 1)
+						right = false;
+					else
+						right = _blocks[x+1][y][z].isActive();
+					if (z == 0)
+						back = false;
+					else
+						back = _blocks[x][y][z-1].isActive();
+					if (z == CHUNK_SIZE - 1)
+						front = false;
+					else
+						front = _blocks[x][y][z+1].isActive();
+
 					// Back face
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z),color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
+					if (!back) {
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
+					}
 
 					//Front face
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
+					if (!front) {
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
+					}
 
 					// Left Face
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
+					if (!left) {
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
+					}
 
 					// Right face
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
-
+					if (!right) {
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
+					}
+					
 					//Bottom face
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+					if (!down) {
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f - y, -0.5f + z), color);
+					}
 
 					// Top face
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
-
+					if (!top) {
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f - y, 0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, -0.5f + z), color);
+						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f - y, 0.5f + z), color);
+					}
 					_blocksCount++;
 				}
 			}

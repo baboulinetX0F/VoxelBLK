@@ -54,6 +54,7 @@ private:
 	double _lastTime;
 	int _nbFrames;
 	double _frameTime;
+	int _debugTmp;
 	
 	// Methods
 	void printDebugInfos();

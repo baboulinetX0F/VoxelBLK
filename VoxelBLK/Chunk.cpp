@@ -22,7 +22,7 @@ bool Chunk::isLoaded()
 
 void Chunk::loadChunk(Renderer* renderer)
 {
-	generateMesh();
+	generateMesh();	
 	std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
 	renderer->LoadMesh(_mesh);
 	_loaded = true;
@@ -55,12 +55,19 @@ void Chunk::DEBUG_fillChunk(DEBUG_CHUNK fill)
 			{
 				if (fill == FILL_ALL)
 					_blocks[x][y][z].setActive(true);
-				else if (fill = FILL_RANDOM)
+				else if (fill == FILL_RANDOM)
 				{
 					if (rand()%2 + 1 > 1)
 						_blocks[x][y][z].setActive(true);
 					else
 						_blocks[x][y][z].setActive(false);
+				}
+				else if (fill == FILL_SPHERE)
+				{
+					if (sqrt((float)(x - CHUNK_SIZE / 2)*(x - CHUNK_SIZE / 2) + (y - WORLD_HEIGHT / 2)*(y - WORLD_HEIGHT / 2) + (z - CHUNK_SIZE / 2)*(z - CHUNK_SIZE / 2)) <= CHUNK_SIZE / 2)
+					{
+						_blocks[x][y][z].setActive(true);						
+					}
 				}
 					
 			}
@@ -87,11 +94,11 @@ void Chunk::generateMesh()
 					if (y == 0)
 						top = false;
 					else
-						top = _blocks[x][y + 1][z].isActive();
+						top = _blocks[x][y - 1][z].isActive();
 					if (y == WORLD_HEIGHT - 1)
 						down = false;
 					else
-						down = _blocks[x][y - 1][z].isActive();
+						down = _blocks[x][y + 1][z].isActive();
 					if (x == 0)
 						left = false;
 					else

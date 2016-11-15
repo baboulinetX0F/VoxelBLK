@@ -3,13 +3,14 @@
 #include "Renderer.h"
 #include "Block.h"
 
-static const int CHUNK_SIZE = 8;
-static const int WORLD_HEIGHT = 8;
+static const int CHUNK_SIZE = 16;
+static const int WORLD_HEIGHT = 16;
 
 enum DEBUG_CHUNK
 {
 	FILL_ALL,
-	FILL_RANDOM
+	FILL_RANDOM,
+	FILL_SPHERE
 };
 
 class Chunk
@@ -36,7 +37,6 @@ private:
 	int _blocksCount;
 	bool _loaded;
 
-	void generateMesh();
-	bool block_visible(int x, int y, int z);
-	
+	void generateMesh();	
+	bool block_visible(int x, int y, int z);	
 };

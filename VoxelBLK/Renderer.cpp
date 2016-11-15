@@ -43,14 +43,13 @@ void Renderer::initWindow(const char * title, int width, int height)
 
 	glewExperimental = GL_TRUE;
 
-	glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);
-
+	glfwGetWindowSize(_window, &_windowWidth, &_windowHeight);	
 	int vp_width, vp_height;
 	glfwGetFramebufferSize(_window, &vp_width, &vp_height);
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);	
+	glGenQueries(1, &_occlusionQuery);
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -108,9 +107,18 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(mesh->getVAO());
-	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
-	_debugTmp = mesh->getVertices().size();
-	glBindVertexArray(0);
+	glColorMask(false, false, false, false);
+	glDepthMask(GL_FALSE);
+	if (occlusionTest(mesh))
+	{
+		glColorMask(true, true, true, true);
+		glDepthMask(GL_TRUE);
+		glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
+		_debugTmp = mesh->getVertices().size();
+		glBindVertexArray(0);
+	}
+	glColorMask(true, true, true, true);
+	glDepthMask(GL_TRUE);
 }
 
 void Renderer::RenderMesh(Mesh * mesh)
@@ -169,4 +177,21 @@ void Renderer::calculateFrameTime()
 		_nbFrames = 0;
 		_lastTime += 1.0;
 	}
+}
+
+bool Renderer::occlusionTest(Mesh * mesh)
+{
+	
+	// Begin occlusion query
+	glBeginQuery(GL_SAMPLES_PASSED, _occlusionQuery);
+	// Every pixel that passes the depth test now gets added to the result
+	glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
+	glEndQuery(GL_SAMPLES_PASSED);
+	// Now get tthe number of pixels passed
+	int iSamplesPassed = 0;
+	glGetQueryObjectiv(_occlusionQuery, GL_QUERY_RESULT, &iSamplesPassed);
+	if (iSamplesPassed > 10000)
+		return true;
+	else
+		return false;	
 }

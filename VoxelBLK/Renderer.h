@@ -49,6 +49,7 @@ private:
 	glm::mat4 _projection;
 
 	Shader* _defaultShader;
+	GLuint _occlusionQuery;
 
 	// debug attributes (frametime, drawcalls etc...)
 	double _lastTime;
@@ -59,5 +60,7 @@ private:
 	// Methods
 	void printDebugInfos();
 	void calculateFrameTime();
+
+	bool occlusionTest(Mesh* mesh);
 };
 

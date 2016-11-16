@@ -23,7 +23,9 @@ bool Chunk::isLoaded()
 void Chunk::loadChunk(Renderer* renderer)
 {
 	generateMesh();	
+	//generateOcclusionMesh(renderer);
 	std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
+	//renderer->LoadMesh(_occlusionMesh);
 	renderer->LoadMesh(_mesh);
 	_loaded = true;
 }
@@ -75,8 +77,9 @@ void Chunk::DEBUG_fillChunk(DEBUG_CHUNK fill)
 	}	
 }
 
+
 void Chunk::generateMesh()
-{
+{	
 	srand(time(NULL));
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
@@ -181,6 +184,7 @@ void Chunk::generateMesh()
 		}
 	}
 }
+
 
 bool Chunk::block_visible(int x, int y, int z)
 {

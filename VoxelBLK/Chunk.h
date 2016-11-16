@@ -31,6 +31,7 @@ class Chunk
  private:
   Block _blocks[CHUNK_SIZE][WORLD_HEIGHT][CHUNK_SIZE]; 
   Mesh* _mesh;
+  Mesh* _occlusionMesh;
 	
 
 private:

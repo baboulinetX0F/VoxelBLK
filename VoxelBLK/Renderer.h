@@ -14,6 +14,7 @@ enum RenderMode
 	RENDER_FILL
 };
 
+
 class Renderer
 {
 public:
@@ -56,6 +57,9 @@ private:
 	int _nbFrames;
 	double _frameTime;
 	int _debugTmp;
+
+	// debug parameter
+	bool _pRenderOcclusionPrimitive = false;
 	
 	// Methods
 	void printDebugInfos();

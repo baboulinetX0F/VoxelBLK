@@ -28,7 +28,7 @@ void Game::init()
 	Input::initInput(_renderer);
 	_chunkManager = new ChunkManager();
 	_chunkManager->DEBUG_fillChunks(FILL_ALL);
-	_renderer->setRenderMode(RENDER_WIREFRAME);
+	//_renderer->setRenderMode(RENDER_WIREFRAME);	
 }
 
 void Game::gameLoop()

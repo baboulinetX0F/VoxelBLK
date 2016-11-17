@@ -69,12 +69,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps\glfw\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)IMGui;$(SolutionDir)deps\freetype\include;$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)IMGui\Debug;$(SolutionDir)deps\freetype\lib;$(SolutionDir)deps\glfw\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps\glfw\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)IMGui;$(SolutionDir)deps\freetype\include;$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)IMGui\Debug;$(SolutionDir)deps\freetype\lib;$(SolutionDir)deps\glfw\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,7 +84,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IMGui.lib;freetype27d.lib;opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IMGui.lib;freetype27d.lib;opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,6 +137,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

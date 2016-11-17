@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoxelBLK", "VoxelBLK\VoxelBLK.vcxproj", "{1DE62573-AE4F-499F-9739-6A0E1CD57D12}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMGui", "..\OpenGL\IMGui\IMGui.vcxproj", "{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,12 @@ Global
 		{1DE62573-AE4F-499F-9739-6A0E1CD57D12}.Release|x64.Build.0 = Release|x64
 		{1DE62573-AE4F-499F-9739-6A0E1CD57D12}.Release|x86.ActiveCfg = Release|Win32
 		{1DE62573-AE4F-499F-9739-6A0E1CD57D12}.Release|x86.Build.0 = Release|Win32
+		{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}.Debug|x64.ActiveCfg = Debug|Win32
+		{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}.Debug|x86.ActiveCfg = Debug|Win32
+		{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}.Debug|x86.Build.0 = Debug|Win32
+		{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}.Release|x64.ActiveCfg = Release|Win32
+		{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}.Release|x86.ActiveCfg = Release|Win32
+		{1DE02CB5-524B-4F22-A6D6-4BC3A6144D0E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

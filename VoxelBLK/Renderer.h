@@ -43,6 +43,8 @@ public:
 
 	void initDefaultShader();
 
+	const int getVerticesRendered();
+
 private:
 	GLFWwindow* _window;
 	int _windowWidth, _windowHeight;
@@ -56,7 +58,7 @@ private:
 	double _lastTime;
 	int _nbFrames;
 	double _frameTime;
-	int _debugTmp;
+	int _dVerticesRendered;
 
 	// debug parameter
 	bool _pRenderOcclusionPrimitive = false;

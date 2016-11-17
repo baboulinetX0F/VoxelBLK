@@ -71,8 +71,9 @@ void Renderer::setWindowTitle(const char* title)
 
 void Renderer::beginFrame()
 {	
-	calculateFrameTime();
+	//calculateFrameTime();
 	glfwPollEvents();
+	_dVerticesRendered = 0;
 	glClearColor(0.258f, 0.523f, 0.95f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -95,7 +96,7 @@ void Renderer::LoadMesh(Mesh * mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// Load occlusion primitive for culling
+	// Load mesh's occlusion primitive for culling
 	mesh->generateOcclusionPrimitve();	
 	data = mesh->getOcclusionPrimitive()->verticesToArray();
 	glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
@@ -119,8 +120,7 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 	shader->Use();
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1, GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
 	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
-	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));	
-	
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 	if (occlusionTest(mesh))
 	{		
 		glColorMask(true, true, true, true);
@@ -129,13 +129,14 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 		{
 			glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
 			glDrawArrays(GL_TRIANGLES, 0, mesh->getOcclusionPrimitive()->getVertices().size());
+			_dVerticesRendered += mesh->getOcclusionPrimitive()->getVertices().size();
 			glBindVertexArray(0);			
 		}
 		else
 		{
 			glBindVertexArray(mesh->getVAO());
 			glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
-			_debugTmp = mesh->getVertices().size();
+			_dVerticesRendered += mesh->getVertices().size();
 			glBindVertexArray(0);
 		}
 	}
@@ -186,9 +187,14 @@ void Renderer::initDefaultShader()
 	_defaultShader = new Shader("shaders/default_camera.vert", "shaders/default.frag");
 }
 
+const int Renderer::getVerticesRendered()
+{
+	return _dVerticesRendered;
+}
+
 void Renderer::printDebugInfos()
 {
-	printf("%f ms/frame | %f fps | %d vertices rendered\n", _frameTime, 1000 / _frameTime, _debugTmp);
+	printf("%f ms/frame | %f fps | %d vertices rendered\n", _frameTime, 1000 / _frameTime, _dVerticesRendered);
 }
 
 void Renderer::calculateFrameTime()

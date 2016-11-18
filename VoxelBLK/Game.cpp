@@ -29,7 +29,8 @@ void Game::init()
 	Input::initInput(_renderer);
 	_uiManager->init(_renderer);
 	_chunkManager = new ChunkManager();
-	_chunkManager->DEBUG_fillChunks(FILL_ALL);
+	_chunkManager->DEBUG_fillChunks(GEN_PERLIN);
+	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()
@@ -38,7 +39,9 @@ void Game::gameLoop()
 	//Chunk* chunk = new Chunk();
 	//chunk->DEBUG_fillChunk(FILL_RANDOM);
 	//chunk->loadChunk(_renderer);
-
+	
+	std::cout << _chunkManager->getNoiseValue(1, 5) << std::endl;
+	std::cout << _chunkManager->getNoiseValue(8, 25) << std::endl;
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();
@@ -51,4 +54,5 @@ void Game::gameLoop()
 
 		_renderer->endFrame();
 	}
+	
 }

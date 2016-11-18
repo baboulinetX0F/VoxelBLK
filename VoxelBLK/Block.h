@@ -19,7 +19,7 @@ public:
 	void setActive(bool state);
 
 private:
-	bool _active;	
-	BlockType _type;
+	bool _active = false;
+	BlockType _type = BlockType::BLOCK_DEFAULT;
 };
 

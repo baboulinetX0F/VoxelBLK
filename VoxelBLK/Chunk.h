@@ -1,16 +1,22 @@
 #pragma once
 
+#include <noise\noise.h>
+
 #include "Renderer.h"
 #include "Block.h"
+
 
 static const int CHUNK_SIZE = 16;
 static const int WORLD_HEIGHT = 16;
 
-enum DEBUG_CHUNK
+class ChunkManager;
+
+enum CHUNK_GEN_MODE
 {
-	FILL_ALL,
-	FILL_RANDOM,
-	FILL_SPHERE
+	GEN_FULL,
+	GEN_RANDOM,
+	GEN_SPHERE,
+	GEN_PERLIN
 };
 
 class Chunk
@@ -25,8 +31,8 @@ class Chunk
   void unloadChunk(Renderer* renderer);
   void renderChunk(Renderer* renderer);
   void renderChunk(Renderer * renderer, glm::mat4 model);
-
-  void DEBUG_fillChunk(DEBUG_CHUNK fill);
+  
+  void generateChunk(CHUNK_GEN_MODE fill, ChunkManager* _manager);
   
  private:
   Block _blocks[CHUNK_SIZE][WORLD_HEIGHT][CHUNK_SIZE]; 
@@ -35,8 +41,8 @@ class Chunk
 	
 
 private:
-	int _blocksCount;
-	bool _loaded;
+	int _blocksCount = 0;
+	bool _loaded = false;
 
 	void generateMesh();	
 	bool block_visible(int x, int y, int z);	

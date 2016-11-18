@@ -3,9 +3,8 @@
 
 
 Block::Block()
-{
-	_active = false;
-	_type = BlockType::BLOCK_DEFAULT;
+{	
+	
 }
 
 

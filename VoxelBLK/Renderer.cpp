@@ -16,6 +16,7 @@ Renderer::~Renderer()
 {
 	if (_window != nullptr)
 		glfwDestroyWindow(_window);
+	glDeleteQueries(1, &_occlusionQuery);
 }
 
 void Renderer::initWindow(const char * title, int width, int height)
@@ -49,7 +50,6 @@ void Renderer::initWindow(const char * title, int width, int height)
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
 	glGenQueries(1, &_occlusionQuery);
 }
 
@@ -70,8 +70,7 @@ void Renderer::setWindowTitle(const char* title)
 }
 
 void Renderer::beginFrame()
-{	
-	//calculateFrameTime();
+{
 	glfwPollEvents();
 	_dVerticesRendered = 0;
 	glClearColor(0.258f, 0.523f, 0.95f, 1.0f);
@@ -174,7 +173,7 @@ void Renderer::setRenderMode(RenderMode mode)
 void Renderer::initCamera()
 {
 	_camera = new Camera();
-	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight, 0.1f, 50.0f);
+	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight, 0.1f, 100.0f);
 }
 
 Camera * Renderer::getCamera()

@@ -14,9 +14,9 @@ ChunkManager::~ChunkManager()
 
 void ChunkManager::init()
 {
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 2; x++)
 	{
-		for (int y = 0; y < 5; y++)
+		for (int y = 0; y < 2; y++)
 		{
 			_chunks[x][y] = new Chunk();
 		}
@@ -29,9 +29,9 @@ void ChunkManager::init()
 
 void ChunkManager::DEBUG_fillChunks(CHUNK_GEN_MODE d)
 {
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 2; x++)
 	{
-		for (int y = 0; y < 5; y++)
+		for (int y = 0; y < 2; y++)
 		{
 			_chunks[x][y]->generateChunk(d, this);
 		}
@@ -40,9 +40,9 @@ void ChunkManager::DEBUG_fillChunks(CHUNK_GEN_MODE d)
 
 void ChunkManager::Update(Renderer* renderer)
 {
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 2; x++)
 	{
-		for (int y = 0; y < 5; y++)
+		for (int y = 0; y < 2; y++)
 		{
 			if (chunk_visible(x,y) && !_chunks[x][y]->isLoaded())
 			{
@@ -58,9 +58,9 @@ void ChunkManager::Update(Renderer* renderer)
 
 void ChunkManager::Render(Renderer * renderer)
 {
-	for (int x = 0; x < 5; x++)
+	for (int x = 0; x < 2; x++)
 	{
-		for (int y = 0; y < 5; y++)
+		for (int y = 0; y < 2; y++)
 		{
 			glm::mat4 model = glm::mat4();
 			model = glm::translate(model, glm::vec3(x*CHUNK_SIZE, 0.0f, y*CHUNK_SIZE));

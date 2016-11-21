@@ -44,6 +44,7 @@ private:
 	int _blocksCount = 0;
 	bool _loaded = false;
 
-	void generateMesh();	
+	void generateMesh();
+	void experimental_genMesh();
 	bool block_visible(int x, int y, int z);	
 };

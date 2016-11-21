@@ -22,8 +22,9 @@ bool Chunk::isLoaded()
 
 void Chunk::loadChunk(Renderer* renderer)
 {
-	generateMesh();	
-	std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
+	generateMesh();
+	//experimental_genMesh();
+	//std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
 	renderer->LoadMesh(_mesh);
 	_loaded = true;
 }
@@ -190,6 +191,102 @@ void Chunk::generateMesh()
 				}
 			}
 		}
+	}
+}
+
+void Chunk::experimental_genMesh()
+{
+	struct Quad
+	{
+		int x;
+		int y;
+		int w;
+		int h;
+	};
+
+	bool x_seg = false;
+	Quad* currentQuad = new Quad();
+	std::vector<Quad> quads;
+
+	glm::vec4 color = MESH_DEFAULT_COLOR;
+
+	for (int z = 0; z < CHUNK_SIZE; z++)
+	{
+		for (int y = 0; y < WORLD_HEIGHT; y++)
+		{
+			for (int x = 0; x < CHUNK_SIZE; x++)
+			{
+				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
+					bool top, down, left, right, front, back;
+					if (y == 0)
+						down = false;
+					else
+						down = _blocks[x][y - 1][z].isActive();
+					if (y == WORLD_HEIGHT - 1)
+						top = false;
+					else
+						top = _blocks[x][y + 1][z].isActive();
+					if (x == 0)
+						left = false;
+					else
+						left = _blocks[x - 1][y][z].isActive();
+					if (x == CHUNK_SIZE - 1)
+						right = false;
+					else
+						right = _blocks[x + 1][y][z].isActive();
+					if (z == 0)
+						back = false;
+					else
+						back = _blocks[x][y][z - 1].isActive();
+					if (z == CHUNK_SIZE - 1)
+						front = false;
+					else
+						front = _blocks[x][y][z + 1].isActive();
+
+					if (!x_seg)
+					{
+						x_seg = true;
+						currentQuad = new Quad();
+						currentQuad->w = 1;
+						currentQuad->x = x;
+						currentQuad->y = y;
+						currentQuad->h = 1;
+					}
+					else
+					{
+						currentQuad->w += 1;
+					}
+
+					_blocksCount++;
+				}
+				else if (x_seg)
+				{
+					quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+					x_seg = false;
+				}
+
+			}
+			if (x_seg)
+			{
+				x_seg = false;
+				if (currentQuad != nullptr)
+				{
+					quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+				}
+			}
+		}
+	}
+
+	// TODO : Merge Quads
+
+
+	std::cout << "Quad Count : " << quads.size() << std::endl;
+	int tmp = 0;
+	for (unsigned int i = 0; i < quads.size(); i++)
+	{
+		//std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
 	}
 }
 

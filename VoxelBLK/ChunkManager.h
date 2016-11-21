@@ -19,7 +19,6 @@ public:
 	void Render(Renderer* renderer);
 
 	int getNoiseValue(double x, double z);
-	//glm::vec3 getChunkPos(Chunk* chunk);
 
 private:
 	Chunk* _chunks[5][5];

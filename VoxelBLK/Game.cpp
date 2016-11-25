@@ -28,28 +28,26 @@ void Game::init()
 	_renderer->initCamera();
 	Input::initInput(_renderer);
 	_uiManager->init(_renderer);
-	_chunkManager = new ChunkManager();
-	_chunkManager->DEBUG_fillChunks(GEN_FULL);
-	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
+	//_chunkManager = new ChunkManager();
+	//_chunkManager->DEBUG_fillChunks(GEN_FULL);
+	_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()
 {	
 
-	//Chunk* chunk = new Chunk();
-	//chunk->DEBUG_fillChunk(FILL_RANDOM);
-	//chunk->loadChunk(_renderer);
-	
-	std::cout << _chunkManager->getNoiseValue(1, 5) << std::endl;
-	std::cout << _chunkManager->getNoiseValue(8, 25) << std::endl;
+	Chunk* chunk = new Chunk();
+	chunk->generateChunk(GEN_FULL, nullptr);
+	chunk->loadChunk(_renderer);
+		
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();
 		_uiManager->NewFrame();
 
-		//chunk->renderChunk(_renderer);
-		_chunkManager->Update(_renderer);
-		_chunkManager->Render(_renderer);
+		chunk->renderChunk(_renderer);
+		//_chunkManager->Update(_renderer);
+		//_chunkManager->Render(_renderer);
 		_uiManager->Render();		
 
 		_renderer->endFrame();

@@ -5,6 +5,9 @@
 
 #include <noise\noise.h>
 
+const int CHUNKS_NUMBER_X = 1;
+const int CHUNKS_NUMBER_Y = 1;
+
 class ChunkManager
 {
 public:
@@ -21,7 +24,7 @@ public:
 	int getNoiseValue(double x, double z);
 
 private:
-	Chunk* _chunks[5][5];
+	Chunk* _chunks[CHUNKS_NUMBER_X][CHUNKS_NUMBER_Y];
 	noise::module::Perlin _noise;
 
 	bool chunk_visible(int x, int y);

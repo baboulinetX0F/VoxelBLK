@@ -37,6 +37,7 @@ public:
 	void RenderMesh(Mesh* mesh, glm::mat4 model);
 
 	void setRenderMode(RenderMode mode);
+	const RenderMode getRenderMode();
 
 	void initCamera();
 	Camera* getCamera();
@@ -59,6 +60,7 @@ private:
 	int _nbFrames;
 	double _frameTime;
 	int _dVerticesRendered;
+	RenderMode _dRenderMode = RenderMode::RENDER_FILL;
 
 	// debug parameter
 	bool _pRenderOcclusionPrimitive = false;

@@ -160,6 +160,7 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model)
 
 void Renderer::setRenderMode(RenderMode mode)
 {
+	_dRenderMode = mode;
 	switch (mode)
 	{
 	case RENDER_WIREFRAME:
@@ -167,7 +168,13 @@ void Renderer::setRenderMode(RenderMode mode)
 		break;
 	case RENDER_FILL:
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		break;
 	}
+}
+
+const RenderMode Renderer::getRenderMode()
+{
+	return _dRenderMode;
 }
 
 void Renderer::initCamera()

@@ -22,8 +22,8 @@ bool Chunk::isLoaded()
 
 void Chunk::loadChunk(Renderer* renderer)
 {
-	generateMesh();
-	//experimental_genMesh();
+	//generateMesh();
+	experimental_genMesh();
 	//std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
 	renderer->LoadMesh(_mesh);
 	_loaded = true;
@@ -200,15 +200,16 @@ void Chunk::experimental_genMesh()
 	{
 		int x;
 		int y;
+		int z;
 		int w;
-		int h;
+		int h;		
 	};
 
 	bool x_seg = false;
 	Quad* currentQuad = new Quad();
 	std::vector<Quad> quads;
 
-	glm::vec4 color = MESH_DEFAULT_COLOR;
+	glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
 
 	for (int z = 0; z < CHUNK_SIZE; z++)
 	{
@@ -243,29 +244,72 @@ void Chunk::experimental_genMesh()
 					else
 						front = _blocks[x][y][z + 1].isActive();
 
-					if (!x_seg)
-					{
-						x_seg = true;
-						currentQuad = new Quad();
-						currentQuad->w = 1;
-						currentQuad->x = x;
-						currentQuad->y = y;
-						currentQuad->h = 1;
-					}
-					else
-					{
-						currentQuad->w += 1;
-					}
+					// Left Face
+					//if (!left) {
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
+					//}
 
-					_blocksCount++;
-				}
-				else if (x_seg)
-				{
-					quads.push_back(*currentQuad);
-					currentQuad = nullptr;
-					x_seg = false;
-				}
+					// Right face
+					//if (!right) {
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
+					//}
 
+					//Bottom face
+					//if (!down) {
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
+					//}
+
+					// Top face
+					//if (!top) {
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
+					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
+					//}
+
+						
+					if (z == 0) {
+						if (!x_seg)
+						{
+							x_seg = true;
+							currentQuad = new Quad();
+							currentQuad->w = 1;
+							currentQuad->x = x;
+							currentQuad->x = z;
+							currentQuad->y = y;
+							currentQuad->h = 1;
+						}
+						else
+						{
+							currentQuad->w += 1;
+						}
+
+						_blocksCount++;
+					}
+					else if (x_seg)
+					{
+						quads.push_back(*currentQuad);
+						currentQuad = nullptr;
+						x_seg = false;
+					}
+				}				
 			}
 			if (x_seg)
 			{
@@ -277,16 +321,61 @@ void Chunk::experimental_genMesh()
 				}
 			}
 		}
+		if (x_seg)
+		{
+			x_seg = false;
+			if (currentQuad != nullptr)
+			{
+				quads.push_back(*currentQuad);
+				currentQuad = nullptr;
+			}
+		}
 	}
 
-	// TODO : Merge Quads
+	std::cout << "Quad Count pre-merge : " << quads.size() << std::endl; // Debug Display
 
+	// UNDONE : Merge Quads
+	// TODO : Fix the height problem for front/back face
+	int i = 0;	
+	while(i < quads.size() - 1)
+	{
+		if (quads[i + 1].y == quads[i].y + quads[i].h && quads[i + 1].w == quads[i].w && quads[i + 1].z == quads[i].z && quads[i + 1].x == quads[i].x)
+		{
+			quads[i].h += 1;
+			quads.erase(quads.begin() + (i + 1));
+		}
+		else	
+			i++;
+	}
 
-	std::cout << "Quad Count : " << quads.size() << std::endl;
+	// Debug Display
+	std::cout << "Quad Count post-merge : " << quads.size() << std::endl;
 	int tmp = 0;
 	for (unsigned int i = 0; i < quads.size(); i++)
 	{
-		//std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
+		std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
+	}
+
+	color = MESH_DEFAULT_COLOR;
+
+	// Transform quads into triangles-based quads
+	for (unsigned int i = 0; i < quads.size(); i++)
+	{
+		// Back face
+		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + quads[i].w, 0.5f + quads[i].h + quads[i].y, -0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + quads[i].w, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + quads[i].w, 0.5f + quads[i].h + quads[i].y, -0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + quads[i].h + quads[i].y, -0.5f + quads[i].z), color);		
+
+		// Front face
+		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + quads[i].w, 0.5f + quads[i].h + quads[i].y, 0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + quads[i].w, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + quads[i].w, 0.5f + quads[i].h + quads[i].y, 0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
+		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + quads[i].h + quads[i].y, 0.5f + quads[i].z), color);		
 	}
 }
 

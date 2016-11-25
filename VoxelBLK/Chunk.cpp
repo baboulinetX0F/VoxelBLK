@@ -244,6 +244,7 @@ void Chunk::experimental_genMesh()
 					else
 						front = _blocks[x][y][z + 1].isActive();
 
+					// TODO : Fix face discard for experimental meshing
 					// Left Face
 					//if (!left) {
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
@@ -285,14 +286,14 @@ void Chunk::experimental_genMesh()
 					//}
 
 						
-					if (z == 0) {
+					if (z == 0 || true) {
 						if (!x_seg)
 						{
 							x_seg = true;
 							currentQuad = new Quad();
 							currentQuad->w = 1;
 							currentQuad->x = x;
-							currentQuad->x = z;
+							currentQuad->z = z;
 							currentQuad->y = y;
 							currentQuad->h = 1;
 						}

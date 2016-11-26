@@ -209,7 +209,7 @@ void Chunk::experimental_genMesh()
 	Quad* currentQuad = new Quad();
 	std::vector<Quad> quads;
 
-	glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
+	glm::vec4 color;
 
 	for (int z = 0; z < CHUNK_SIZE; z++)
 	{
@@ -217,7 +217,8 @@ void Chunk::experimental_genMesh()
 		{
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
-				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
+				color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
+				if (/*block_visible(x, y, z)*/ true && _blocks[x][y][z].isActive()) {
 					bool top, down, left, right, front, back;
 					if (y == 0)
 						down = false;
@@ -286,31 +287,29 @@ void Chunk::experimental_genMesh()
 					//}
 
 						
-					if (z == 0 || true) {
-						if (!x_seg)
-						{
-							x_seg = true;
-							currentQuad = new Quad();
-							currentQuad->w = 1;
-							currentQuad->x = x;
-							currentQuad->z = z;
-							currentQuad->y = y;
-							currentQuad->h = 1;
-						}
-						else
-						{
-							currentQuad->w += 1;
-						}
-
-						_blocksCount++;
-					}
-					else if (x_seg)
+					
+					if (!x_seg)
 					{
-						quads.push_back(*currentQuad);
-						currentQuad = nullptr;
-						x_seg = false;
+						x_seg = true;
+						currentQuad = new Quad();
+						currentQuad->w = 0;
+						currentQuad->x = x;
+						currentQuad->z = z;
+						currentQuad->y = y;
+						currentQuad->h = 0;
 					}
-				}				
+					else
+					{
+						currentQuad->w += 1;
+					}
+					_blocksCount++;
+				}
+				else if (x_seg)
+				{
+					quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+					x_seg = false;
+				}								
 			}
 			if (x_seg)
 			{
@@ -357,7 +356,7 @@ void Chunk::experimental_genMesh()
 		std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
 	}
 
-	color = MESH_DEFAULT_COLOR;
+	//color = MESH_DEFAULT_COLOR;
 
 	// Transform quads into triangles-based quads
 	for (unsigned int i = 0; i < quads.size(); i++)

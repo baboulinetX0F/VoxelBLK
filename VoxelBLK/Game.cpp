@@ -30,14 +30,13 @@ void Game::init()
 	_uiManager->init(_renderer);
 	//_chunkManager = new ChunkManager();
 	//_chunkManager->DEBUG_fillChunks(GEN_FULL);
-	_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
+	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()
-{	
-
+{
 	Chunk* chunk = new Chunk();
-	chunk->generateChunk(GEN_FULL, nullptr);
+	chunk->generateChunk(GEN_RANDOM, nullptr);
 	chunk->loadChunk(_renderer);
 		
 	while (!glfwWindowShouldClose(_renderer->getWindow()))

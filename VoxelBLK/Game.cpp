@@ -36,7 +36,7 @@ void Game::init()
 void Game::gameLoop()
 {
 	Chunk* chunk = new Chunk();
-	chunk->generateChunk(GEN_RANDOM, nullptr);
+	chunk->generateChunk(GEN_FULL, nullptr);
 	chunk->loadChunk(_renderer);
 		
 	while (!glfwWindowShouldClose(_renderer->getWindow()))

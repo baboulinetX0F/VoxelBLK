@@ -12,6 +12,8 @@ struct Vertex
 {
 	glm::vec3 position;
 	glm::vec4 color;
+
+	Vertex(glm::vec3 pos, glm::vec4 col) : position(pos), color(col) { }
 };
 
 static const glm::vec4 MESH_DEFAULT_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);

@@ -23,8 +23,7 @@ bool Chunk::isLoaded()
 void Chunk::loadChunk(Renderer* renderer)
 {
 	//generateMesh();
-	experimental_genMesh();
-	//std::cout << "CHUNK : " << _blocksCount << " blocks generated\n";
+	experimental_genMesh();	
 	renderer->LoadMesh(_mesh);
 	_loaded = true;
 }
@@ -207,12 +206,13 @@ void Chunk::experimental_genMesh()
 		int h;		
 	};
 
-	bool x_seg = false;
-	Quad* currentQuad = new Quad();
-	std::vector<Quad> quads;
-
 	glm::vec4 color = MESH_OCCLUSION_PRIMITIVE_COLOR;
 
+	Quad* currentQuad = new Quad();
+
+	// Pass for X-axis quads
+	bool x_seg = false;	
+	std::vector<Quad> quads;	
 	for (int z = 0; z < CHUNK_SIZE; z++)
 	{
 		for (int y = 0; y < WORLD_HEIGHT; y++)
@@ -221,73 +221,27 @@ void Chunk::experimental_genMesh()
 			{				
 				if (_blocks[x][y][z].isActive() && block_visible(x,y,z)) {
 					
-					// TODO : Move to a new function
-					bool top, down, left, right, front, back;
-					if (y == 0)
-						down = false;
-					else
-						down = _blocks[x][y - 1][z].isActive();
-					if (y == WORLD_HEIGHT - 1)
-						top = false;
-					else
-						top = _blocks[x][y + 1][z].isActive();
-					if (x == 0)
-						left = false;
-					else
-						left = _blocks[x - 1][y][z].isActive();
-					if (x == CHUNK_SIZE - 1)
-						right = false;
-					else
-						right = _blocks[x + 1][y][z].isActive();
-					if (z == 0)
-						back = false;
-					else
-						back = _blocks[x][y][z - 1].isActive();
-					if (z == CHUNK_SIZE - 1)
-						front = false;
-					else
-						front = _blocks[x][y][z + 1].isActive();
-
-					// TODO : Fix face discard for experimental meshing
-					// Left Face
-					//if (!left) {
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					//}
-
-					// Right face
-					//if (!right) {
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-					//}
-
+					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);
+					
 					//Bottom face
-					//if (!down) {
+					if (!nearbyFaces.down) {
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-					//}
+					}
 
 					// Top face
-					//if (!top) {
+					if (!nearbyFaces.top) {
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					//}						
+					}						
 					
 					if (!x_seg)
 					{
@@ -333,10 +287,66 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	std::cout << "Quad Count pre-merge : " << quads.size() << std::endl; // Debug Display
+	// Pass for Z-Axis quads
+	bool z_seg = false;
+	std::vector<Quad> z_quads;
+	for (int x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (int y = 0; y < WORLD_HEIGHT; y++)
+		{
+			for (int z = 0; z < CHUNK_SIZE; z++)
+			{
+				if (_blocks[x][y][z].isActive() && block_visible(x, y, z)) {	
 
-	// TODO : Fix the height problem for front/back face
-	int i = 0;	
+					if (!z_seg)
+					{
+						z_seg = true;
+						currentQuad = new Quad();
+						currentQuad->w = 1;
+						currentQuad->x = z;
+						currentQuad->z = x;
+						currentQuad->y = y;
+						currentQuad->h = 1;
+					}
+					else
+					{
+						currentQuad->w += 1;
+					}
+					_blocksCount++;
+				}
+				else if (z_seg)
+				{
+					z_quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+					z_seg = false;
+				}
+			}
+			if (z_seg)
+			{
+				z_seg = false;
+				if (currentQuad != nullptr)
+				{
+					z_quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+				}
+			}
+		}
+		if (z_seg)
+		{
+			z_seg = false;
+			if (currentQuad != nullptr)
+			{
+				z_quads.push_back(*currentQuad);
+				currentQuad = nullptr;
+			}
+		}
+	}
+
+	std::cout << "Quads Count pre-merge : " << quads.size() << std::endl; // Debug Display
+	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
+
+	// Merge all quads (x-axis / z-axis)
+	unsigned int i = 0;	
 	while(i < quads.size() - 1)
 	{
 		if ( (quads[i + 1].y == quads[i].y + quads[i].h) && (quads[i + 1].w == quads[i].w) && (quads[i + 1].z == quads[i].z) && (quads[i + 1].x == quads[i].x) )
@@ -348,45 +358,159 @@ void Chunk::experimental_genMesh()
 			i++;
 	}
 
+	i = 0;
+	while (i < z_quads.size() - 1)
+	{
+		if ((z_quads[i + 1].y == z_quads[i].y + z_quads[i].h) && (z_quads[i + 1].w == z_quads[i].w) && (z_quads[i + 1].z == z_quads[i].z) && (z_quads[i + 1].x == z_quads[i].x))
+		{
+			z_quads[i].h += z_quads[i + 1].h;
+			z_quads.erase(z_quads.begin() + (i + 1));
+		}
+		else
+			i++;
+	}
+
 	// Debug Display
-	std::cout << "Quad Count post-merge : " << quads.size() << std::endl;
-	int tmp = 0;
+	std::cout << "Quads Count post-merge : " << quads.size() << std::endl;
+	std::cout << "ZQuads Count post-merge : " << z_quads.size() << std::endl; // Debug Display
+	/*int tmp = 0;
 	for (unsigned int i = 0; i < quads.size(); i++)
 	{
-		std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
-	}
+		std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " z: " 
+			<< quads[i].z  << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
+	}*/
 
 	color = MESH_DEFAULT_COLOR;
 
 	// Transform quads into triangles-based quads
+	BlockFaces nearBlocks = BlockFaces{ true,true,true,true,true,true };
 	for (unsigned int i = 0; i < quads.size(); i++)
 	{
-		// Back face
-		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
-
+		// Check if a face (quad) can discarded
+		bool front = true;
+		bool back = true;	
+		for (unsigned int x = quads[i].x; x < quads[i].x + quads[i].w; x++)
+		{
+			for (unsigned int y = quads[i].y; y < quads[i].y + quads[i].h; y++)
+			{
+				nearBlocks = getBlocksNearby(x, y, quads[i].z);
+				if (!nearBlocks.front && front)				
+					front = false;	
+				if (!nearBlocks.back && back)
+					back = false;				
+				if (!front && !back)
+					break;
+			}
+			if (!front && !back)
+				break;
+		}
+		
 		// Front face
-		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
-		_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
+		if (!front) {
+			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
+		}
+
+		// Back face
+		if (!back) {
+			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
+			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
+		}
+	}
+	
+	color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	for (unsigned int i = 0; i < z_quads.size(); i++)
+	{		
+		// Check if a face (quad) can discarded
+		bool left = true;
+		bool right = true;
+		for (unsigned int x = quads[i].x; x < quads[i].x + quads[i].w; x++)
+		{
+			for (unsigned int y = quads[i].y; y < quads[i].y + quads[i].h; y++)
+			{
+				nearBlocks = getBlocksNearby(quads[i].z, y, x);
+				if (!nearBlocks.left && left)
+					left = false;
+				if (!nearBlocks.right && right)
+					right = false;
+				if (!right && !left)
+					break;
+			}
+			if (!right && !left)
+				break;
+		}
+		
+		// Left Face
+		if (!left) {
+			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+		}
+
+		// Right Face
+		if (!right) {
+			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+		}
 	}
 }
 
 bool Chunk::block_visible(int x, int y, int z)
-{
-	// UNDONE : Calculate Block Visibility for y & z axis
+{	
 	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< WORLD_HEIGHT - 1 && z > 0 && z< CHUNK_SIZE - 1) {
 		if (_blocks[x + 1][y][z].isActive() && _blocks[x - 1][y][z].isActive()) {
-			//std::cout << "BLOCK " << x << ":" << y << ":" << z << " SURROUNDED\n";
-			return false;
+			if (_blocks[x][y + 1][z].isActive() && _blocks[x][y - 1][z].isActive()) {
+				if (_blocks[x][y][z+1].isActive() && _blocks[x][y][z-1].isActive()) {
+					return false;
+				}
+			}
 		}
 	}
 	return true;
+}
+
+BlockFaces Chunk::getBlocksNearby(int x, int y, int z)
+{	
+	BlockFaces output;
+	if (y == 0)
+		output.down = false;
+	else
+		output.down = _blocks[x][y - 1][z].isActive();
+	if (y == WORLD_HEIGHT - 1)
+		output.top = false;
+	else
+		output.top = _blocks[x][y + 1][z].isActive();
+	if (x <= 0)
+		output.left = false;
+	else
+		output.left = _blocks[x - 1][y][z].isActive();
+	if (x >= CHUNK_SIZE - 1)
+		output.right = false;
+	else
+		output.right = _blocks[x + 1][y][z].isActive();
+	if (z == 0)
+		output.front = false;
+	else
+		output.front = _blocks[x][y][z - 1].isActive();
+	if (z == CHUNK_SIZE - 1)
+		output.back = false;
+	else
+		output.back = _blocks[x][y][z + 1].isActive();		
+	return output;
 }

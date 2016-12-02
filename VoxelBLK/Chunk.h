@@ -35,16 +35,16 @@ class Chunk
   void generateChunk(CHUNK_GEN_MODE fill, ChunkManager* _manager);
   
  private:
-  Block _blocks[CHUNK_SIZE][WORLD_HEIGHT][CHUNK_SIZE]; 
-  Mesh* _mesh;
-  Mesh* _occlusionMesh;
-	
+	Block _blocks[CHUNK_SIZE][WORLD_HEIGHT][CHUNK_SIZE]; 
+	Mesh* _mesh;
+	Mesh* _occlusionMesh;
 
-private:
 	int _blocksCount = 0;
 	bool _loaded = false;
 
 	void generateMesh();
 	void experimental_genMesh();
-	bool block_visible(int x, int y, int z);	
+	bool block_visible(int x, int y, int z);
+
+	BlockFaces getBlocksNearby(int x, int y, int z);
 };

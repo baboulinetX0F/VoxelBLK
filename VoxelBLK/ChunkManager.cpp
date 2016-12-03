@@ -21,10 +21,6 @@ void ChunkManager::init()
 			_chunks[x][y] = new Chunk();
 		}
 	}
-	// TODO : Move to a new method initPerlin
-	_noise.SetFrequency(1);
-	_noise.SetLacunarity(2.5);
-	_noise.SetPersistence(1);
 }
 
 void ChunkManager::DEBUG_fillChunks(CHUNK_GEN_MODE d)
@@ -71,7 +67,8 @@ void ChunkManager::Render(Renderer * renderer)
 
 int ChunkManager::getNoiseValue(double x, double z)
 {
-	return _noise.GetValue(x,z,0) * WORLD_HEIGHT;
+	//return _noise->GetValue(x, z, 0) *16;
+	return 0;
 }
 
 bool ChunkManager::chunk_visible(int x, int y)

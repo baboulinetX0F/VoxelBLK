@@ -223,6 +223,7 @@ void Chunk::experimental_genMesh()
 					
 					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);
 					
+					/*
 					//Bottom face
 					if (!nearbyFaces.down) {
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
@@ -242,7 +243,7 @@ void Chunk::experimental_genMesh()
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
 					}						
-					
+					*/
 					if (!x_seg)
 					{
 						x_seg = true;
@@ -342,37 +343,114 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	std::cout << "Quads Count pre-merge : " << quads.size() << std::endl; // Debug Display
-	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
-
-	// Merge all quads (x-axis / z-axis)
-	unsigned int i = 0;	
-	while(i < quads.size() - 1)
+	bool y_seg = false;
+	std::vector<Quad> y_quads;
+	for (int y = 0; y < WORLD_HEIGHT; y++)
 	{
-		if ( (quads[i + 1].y == quads[i].y + quads[i].h) && (quads[i + 1].w == quads[i].w) && (quads[i + 1].z == quads[i].z) && (quads[i + 1].x == quads[i].x) )
+		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
-			quads[i].h += quads[i+1].h;
-			quads.erase(quads.begin() + (i + 1));
+			for (int z = 0; z < CHUNK_SIZE; z++)
+			{
+				if (_blocks[x][y][z].isActive() && block_visible(x, y, z)) {
+
+					if (!y_seg)
+					{
+						y_seg = true;
+						currentQuad = new Quad();
+						currentQuad->w = 1;
+						currentQuad->x = z;
+						currentQuad->z = x;
+						currentQuad->y = y;
+						currentQuad->h = 1;
+					}
+					else
+					{
+						currentQuad->w += 1;
+					}
+					_blocksCount++;
+				}
+				else if (y_seg)
+				{
+					y_quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+					y_seg = false;
+				}
+			}
+			if (y_seg)
+			{
+				y_seg = false;
+				if (currentQuad != nullptr)
+				{
+					y_quads.push_back(*currentQuad);
+					currentQuad = nullptr;
+				}
+			}
 		}
-		else	
-			i++;
+		if (y_seg)
+		{
+			y_seg = false;
+			if (currentQuad != nullptr)
+			{
+				y_quads.push_back(*currentQuad);
+				currentQuad = nullptr;
+			}
+		}
 	}
 
-	i = 0;
-	while (i < z_quads.size() - 1)
+	std::cout << "XQuads Count pre-merge : " << quads.size() << std::endl; // Debug Display
+	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
+	std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
+
+	// Merge all quads (x-axis / z-axis)
+	unsigned int i_nextquad = 0;	
+	while(i_nextquad < quads.size() - 1)
 	{
-		if ((z_quads[i + 1].y == z_quads[i].y + z_quads[i].h) && (z_quads[i + 1].w == z_quads[i].w) && (z_quads[i + 1].z == z_quads[i].z) && (z_quads[i + 1].x == z_quads[i].x))
+		if ( (quads[i_nextquad + 1].y == quads[i_nextquad].y + quads[i_nextquad].h)
+			&& (quads[i_nextquad + 1].w == quads[i_nextquad].w)
+			&& (quads[i_nextquad + 1].z == quads[i_nextquad].z)
+			&& (quads[i_nextquad + 1].x == quads[i_nextquad].x) )
 		{
-			z_quads[i].h += z_quads[i + 1].h;
-			z_quads.erase(z_quads.begin() + (i + 1));
+			quads[i_nextquad].h += quads[i_nextquad+1].h;
+			quads.erase(quads.begin() + (i_nextquad + 1));
+		}
+		else	
+			i_nextquad++;
+	}
+
+	i_nextquad = 0;
+	while (i_nextquad < z_quads.size() - 1)
+	{
+		if ((z_quads[i_nextquad + 1].y == z_quads[i_nextquad].y + z_quads[i_nextquad].h)
+			&& (z_quads[i_nextquad + 1].w == z_quads[i_nextquad].w)
+			&& (z_quads[i_nextquad + 1].z == z_quads[i_nextquad].z)
+			&& (z_quads[i_nextquad + 1].x == z_quads[i_nextquad].x))
+		{
+			z_quads[i_nextquad].h += z_quads[i_nextquad + 1].h;
+			z_quads.erase(z_quads.begin() + (i_nextquad + 1));
 		}
 		else
-			i++;
+			i_nextquad++;
+	}
+
+	i_nextquad = 0;
+	while (i_nextquad < y_quads.size() - 1)
+	{
+		if ((y_quads[i_nextquad + 1].y == y_quads[i_nextquad].y + y_quads[i_nextquad].h)
+			&& (y_quads[i_nextquad + 1].w == y_quads[i_nextquad].w)
+			&& (y_quads[i_nextquad + 1].z == y_quads[i_nextquad].z)
+			&& (y_quads[i_nextquad + 1].x == y_quads[i_nextquad].x))
+		{
+			y_quads[i_nextquad].h += y_quads[i_nextquad + 1].h;
+			y_quads.erase(y_quads.begin() + (i_nextquad + 1));
+		}
+		else
+			i_nextquad++;
 	}
 
 	// Debug Display
-	std::cout << "Quads Count post-merge : " << quads.size() << std::endl;
+	std::cout << "XQuads Count post-merge : " << quads.size() << std::endl;
 	std::cout << "ZQuads Count post-merge : " << z_quads.size() << std::endl; // Debug Display
+	std::cout << "YQuads Count post-merge : " << y_quads.size() << std::endl;
 	/*int tmp = 0;
 	for (unsigned int i = 0; i < quads.size(); i++)
 	{
@@ -433,11 +511,11 @@ void Chunk::experimental_genMesh()
 		// Check if a face (quad) can discarded
 		bool left = true;
 		bool right = true;
-		for (unsigned int x = quads[i].x; x < quads[i].x + quads[i].w; x++)
+		for (unsigned int x = z_quads[i].x; x < z_quads[i].x + z_quads[i].w; x++)
 		{
-			for (unsigned int y = quads[i].y; y < quads[i].y + quads[i].h; y++)
+			for (unsigned int y = z_quads[i].y; y < z_quads[i].y + z_quads[i].h; y++)
 			{
-				nearBlocks = getBlocksNearby(quads[i].z, y, x);
+				nearBlocks = getBlocksNearby(z_quads[i].z, y, x);
 				if (!nearBlocks.left && left)
 					left = false;
 				if (!nearBlocks.right && right)
@@ -467,6 +545,50 @@ void Chunk::experimental_genMesh()
 			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
 			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
 			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+		}
+	}
+
+	color = MESH_OCCLUSION_PRIMITIVE_COLOR;
+
+	for (unsigned int i = 0; i < y_quads.size(); i++)
+	{
+		// Check if a face (quad) can discarded
+		bool top = true;
+		bool down = true;
+		for (unsigned int x = y_quads[i].x; x < y_quads[i].x + y_quads[i].w; x++)
+		{
+			for (unsigned int y = y_quads[i].y; y < y_quads[i].y + y_quads[i].h; y++)
+			{
+				nearBlocks = getBlocksNearby(y, y_quads[i].z, x);
+				if (!nearBlocks.down && down)
+					down = false;
+				if (!nearBlocks.top && top)
+					top = false;
+				if (!top && !down)
+					break;
+			}
+			if (!top && !down)
+				break;
+		}
+
+		// Left Face
+		if (!down) {
+			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		}
+
+		// Right Face
+		if (!top) {
+			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y +(y_quads[i].h-1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
 		}
 	}
 }

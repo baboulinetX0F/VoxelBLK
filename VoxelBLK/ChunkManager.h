@@ -25,7 +25,7 @@ public:
 
 private:
 	Chunk* _chunks[CHUNKS_NUMBER_X][CHUNKS_NUMBER_Y];
-	noise::module::Perlin _noise;
+	noise::module::Perlin* _noise;
 
 	bool chunk_visible(int x, int y);
 };

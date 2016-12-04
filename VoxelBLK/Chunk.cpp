@@ -1,18 +1,22 @@
 #include "Chunk.h"
+#include "ChunkManager.h"
 
 #include <stdlib.h>
 #include <time.h>
-
-#include "ChunkManager.h"
 
 Chunk::Chunk()
 {
 	_mesh = new Mesh();
 }
 
-Chunk::~Chunk()
+Chunk::Chunk(glm::vec2 pos)
 {
-	
+	_mesh = new Mesh();
+	_position = pos;
+}
+
+Chunk::~Chunk()
+{	
 }
 
 bool Chunk::isLoaded()
@@ -52,7 +56,10 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				int cell_height = _manager->getNoiseValue(x, z);
+				float x_world = (float) (x + (_position.x * CHUNK_SIZE)) / 256;
+				float z_world = (float) (z + (_position.y * CHUNK_SIZE)) / 256;
+				int cell_height = _manager->getNoiseValue(x_world, z_world);
+				if (cell_height >= CHUNK_SIZE - 1) cell_height = CHUNK_SIZE - 1;
 				for (int y = 0; y < cell_height; y++)
 				{
 					_blocks[x][y][z].setActive(true);
@@ -96,40 +103,14 @@ void Chunk::generateMesh()
 		for (int y = 0; y < WORLD_HEIGHT; y++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
-			{
-				// TODO : Integrate Greedy meshing
+			{				
 				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
 					glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
 
-					// TODO : Move to a new function
-					bool top,down,left,right,front,back;
-					if (y == 0)						
-						down = false;
-					else
-						down = _blocks[x][y - 1][z].isActive();
-					if (y == WORLD_HEIGHT - 1)
-						top = false;
-					else						
-						top = _blocks[x][y + 1][z].isActive();
-					if (x == 0)
-						left = false;
-					else
-						left = _blocks[x-1][y][z].isActive();
-					if (x == CHUNK_SIZE - 1)
-						right = false;
-					else
-						right = _blocks[x+1][y][z].isActive();
-					if (z == 0)
-						back = false;
-					else
-						back = _blocks[x][y][z-1].isActive();
-					if (z == CHUNK_SIZE - 1)
-						front = false;
-					else
-						front = _blocks[x][y][z+1].isActive();
+					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);
 
 					// Back face
-					if (!back) {
+					if (!nearbyFaces.back) {
 						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
@@ -139,7 +120,7 @@ void Chunk::generateMesh()
 					}
 
 					//Front face
-					if (!front) {
+					if (!nearbyFaces.front) {
 						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
@@ -149,7 +130,7 @@ void Chunk::generateMesh()
 					}
 
 					// Left Face
-					if (!left) {
+					if (!nearbyFaces.left) {
 						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
 						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
@@ -159,7 +140,7 @@ void Chunk::generateMesh()
 					}
 
 					// Right face
-					if (!right) {
+					if (!nearbyFaces.right) {
 						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
@@ -169,7 +150,7 @@ void Chunk::generateMesh()
 					}
 					
 					//Bottom face
-					if (!down) {
+					if (!nearbyFaces.down) {
 						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
@@ -179,7 +160,7 @@ void Chunk::generateMesh()
 					}
 
 					// Top face
-					if (!top) {
+					if (!nearbyFaces.top) {
 						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
 						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
@@ -219,11 +200,9 @@ void Chunk::experimental_genMesh()
 		{
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{				
-				if (_blocks[x][y][z].isActive() && block_visible(x,y,z)) {
+				if (_blocks[x][y][z].isActive() && block_visible(x,y,z)) {					
+					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);					
 					
-					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);
-					
-					/*
 					//Bottom face
 					if (!nearbyFaces.down) {
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
@@ -243,7 +222,7 @@ void Chunk::experimental_genMesh()
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
 					}						
-					*/
+				
 					if (!x_seg)
 					{
 						x_seg = true;
@@ -343,7 +322,7 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	bool y_seg = false;
+	/*bool y_seg = false;
 	std::vector<Quad> y_quads;
 	for (int y = 0; y < WORLD_HEIGHT; y++)
 	{
@@ -395,62 +374,67 @@ void Chunk::experimental_genMesh()
 				currentQuad = nullptr;
 			}
 		}
-	}
+	}*/
 
 	std::cout << "XQuads Count pre-merge : " << quads.size() << std::endl; // Debug Display
 	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
-	std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
+	//std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
 
+	// TODO : Rewrite merge algorithm (to test all merges possible)
 	// Merge all quads (x-axis / z-axis)
-	unsigned int i_nextquad = 0;	
-	while(i_nextquad < quads.size() - 1)
-	{
-		if ( (quads[i_nextquad + 1].y == quads[i_nextquad].y + quads[i_nextquad].h)
-			&& (quads[i_nextquad + 1].w == quads[i_nextquad].w)
-			&& (quads[i_nextquad + 1].z == quads[i_nextquad].z)
-			&& (quads[i_nextquad + 1].x == quads[i_nextquad].x) )
+	unsigned int i_nextquad = 0;
+	if (quads.size() > 1) {
+		while (i_nextquad < quads.size() - 1)
 		{
-			quads[i_nextquad].h += quads[i_nextquad+1].h;
-			quads.erase(quads.begin() + (i_nextquad + 1));
+			if ((quads[i_nextquad + 1].y == quads[i_nextquad].y + quads[i_nextquad].h)
+				&& (quads[i_nextquad + 1].w == quads[i_nextquad].w)
+				&& (quads[i_nextquad + 1].z == quads[i_nextquad].z)
+				&& (quads[i_nextquad + 1].x == quads[i_nextquad].x))
+			{
+				quads[i_nextquad].h += quads[i_nextquad + 1].h;
+				quads.erase(quads.begin() + (i_nextquad + 1));
+			}
+			else
+				i_nextquad++;
 		}
-		else	
-			i_nextquad++;
 	}
 
 	i_nextquad = 0;
-	while (i_nextquad < z_quads.size() - 1)
-	{
-		if ((z_quads[i_nextquad + 1].y == z_quads[i_nextquad].y + z_quads[i_nextquad].h)
-			&& (z_quads[i_nextquad + 1].w == z_quads[i_nextquad].w)
-			&& (z_quads[i_nextquad + 1].z == z_quads[i_nextquad].z)
-			&& (z_quads[i_nextquad + 1].x == z_quads[i_nextquad].x))
+	if (z_quads.size() > 1) {
+		while (i_nextquad < z_quads.size() - 1)
 		{
-			z_quads[i_nextquad].h += z_quads[i_nextquad + 1].h;
-			z_quads.erase(z_quads.begin() + (i_nextquad + 1));
+			if ((z_quads[i_nextquad + 1].y == z_quads[i_nextquad].y + z_quads[i_nextquad].h)
+				&& (z_quads[i_nextquad + 1].w == z_quads[i_nextquad].w)
+				&& (z_quads[i_nextquad + 1].z == z_quads[i_nextquad].z)
+				&& (z_quads[i_nextquad + 1].x == z_quads[i_nextquad].x))
+			{
+				z_quads[i_nextquad].h += z_quads[i_nextquad + 1].h;
+				z_quads.erase(z_quads.begin() + (i_nextquad + 1));
+			}
+			else
+				i_nextquad++;
 		}
-		else
-			i_nextquad++;
 	}
 
-	i_nextquad = 0;
+	/*i_nextquad = 0;
 	while (i_nextquad < y_quads.size() - 1)
 	{
 		if ((y_quads[i_nextquad + 1].y == y_quads[i_nextquad].y + y_quads[i_nextquad].h)
 			&& (y_quads[i_nextquad + 1].w == y_quads[i_nextquad].w)
-			&& (y_quads[i_nextquad + 1].z == y_quads[i_nextquad].z)
-			&& (y_quads[i_nextquad + 1].x == y_quads[i_nextquad].x))
-		{
+			&& (y_quads[i_nextquad + 1].x == y_quads[i_nextquad].x)
+			&& (y_quads[i_nextquad + 1].z == y_quads[i_nextquad].z))
+		{			
 			y_quads[i_nextquad].h += y_quads[i_nextquad + 1].h;
 			y_quads.erase(y_quads.begin() + (i_nextquad + 1));
 		}
 		else
 			i_nextquad++;
-	}
+	}*/
 
 	// Debug Display
 	std::cout << "XQuads Count post-merge : " << quads.size() << std::endl;
 	std::cout << "ZQuads Count post-merge : " << z_quads.size() << std::endl; // Debug Display
-	std::cout << "YQuads Count post-merge : " << y_quads.size() << std::endl;
+	//std::cout << "YQuads Count post-merge : " << y_quads.size() << std::endl;
 	/*int tmp = 0;
 	for (unsigned int i = 0; i < quads.size(); i++)
 	{
@@ -484,7 +468,7 @@ void Chunk::experimental_genMesh()
 		}
 		
 		// Front face
-		if (!front) {
+		if (!back) {
 			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
 			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
 			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), color);
@@ -494,7 +478,7 @@ void Chunk::experimental_genMesh()
 		}
 
 		// Back face
-		if (!back) {
+		if (!front) {
 			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
 			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
 			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), color);
@@ -548,7 +532,7 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	color = MESH_OCCLUSION_PRIMITIVE_COLOR;
+	/*color = MESH_OCCLUSION_PRIMITIVE_COLOR;
 
 	for (unsigned int i = 0; i < y_quads.size(); i++)
 	{
@@ -579,7 +563,7 @@ void Chunk::experimental_genMesh()
 			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
 			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
 			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		}
+		//}
 
 		// Right Face
 		if (!top) {
@@ -590,11 +574,11 @@ void Chunk::experimental_genMesh()
 			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
 			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
 		}
-	}
+	}*/
 }
 
 bool Chunk::block_visible(int x, int y, int z)
-{	
+{		
 	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< WORLD_HEIGHT - 1 && z > 0 && z< CHUNK_SIZE - 1) {
 		if (_blocks[x + 1][y][z].isActive() && _blocks[x - 1][y][z].isActive()) {
 			if (_blocks[x][y + 1][z].isActive() && _blocks[x][y - 1][z].isActive()) {
@@ -627,12 +611,12 @@ BlockFaces Chunk::getBlocksNearby(int x, int y, int z)
 	else
 		output.right = _blocks[x + 1][y][z].isActive();
 	if (z == 0)
-		output.front = false;
-	else
-		output.front = _blocks[x][y][z - 1].isActive();
-	if (z == CHUNK_SIZE - 1)
 		output.back = false;
 	else
-		output.back = _blocks[x][y][z + 1].isActive();		
-	return output;
+		output.back = _blocks[x][y][z - 1].isActive();
+	if (z == CHUNK_SIZE - 1)
+		output.front = false;
+	else
+		output.front = _blocks[x][y][z + 1].isActive();		
+	return output;	
 }

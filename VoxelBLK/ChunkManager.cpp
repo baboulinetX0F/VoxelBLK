@@ -1,7 +1,6 @@
 #include "ChunkManager.h"
 
 
-
 ChunkManager::ChunkManager()
 {
 	init();
@@ -14,20 +13,22 @@ ChunkManager::~ChunkManager()
 
 void ChunkManager::init()
 {
-	for (int x = 0; x < 2; x++)
-	{
-		for (int y = 0; y < 2; y++)
+	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
+	{		
+		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
-			_chunks[x][y] = new Chunk();
+			_chunks[x][y] = new Chunk(glm::vec2(x,y));
+			_chunkCount++;
 		}
 	}
+	
 }
 
 void ChunkManager::DEBUG_fillChunks(CHUNK_GEN_MODE d)
 {
-	for (int x = 0; x < 2; x++)
+	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
-		for (int y = 0; y < 2; y++)
+		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
 			_chunks[x][y]->generateChunk(d, this);
 		}
@@ -36,9 +37,9 @@ void ChunkManager::DEBUG_fillChunks(CHUNK_GEN_MODE d)
 
 void ChunkManager::Update(Renderer* renderer)
 {
-	for (int x = 0; x < 2; x++)
+	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
-		for (int y = 0; y < 2; y++)
+		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
 			if (chunk_visible(x,y) && !_chunks[x][y]->isLoaded())
 			{
@@ -54,9 +55,9 @@ void ChunkManager::Update(Renderer* renderer)
 
 void ChunkManager::Render(Renderer * renderer)
 {
-	for (int x = 0; x < 2; x++)
+	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
-		for (int y = 0; y < 2; y++)
+		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
 			glm::mat4 model = glm::mat4();
 			model = glm::translate(model, glm::vec3(x*CHUNK_SIZE, 0.0f, y*CHUNK_SIZE));
@@ -65,10 +66,9 @@ void ChunkManager::Render(Renderer * renderer)
 	}
 }
 
-int ChunkManager::getNoiseValue(double x, double z)
-{
-	//return _noise->GetValue(x, z, 0) *16;
-	return 0;
+int ChunkManager::getNoiseValue(float x, float z)
+{	
+	return (int)(_simplex.noise(x,z) * 16);
 }
 
 bool ChunkManager::chunk_visible(int x, int y)

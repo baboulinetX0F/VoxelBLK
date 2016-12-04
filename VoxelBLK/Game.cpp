@@ -28,27 +28,25 @@ void Game::init()
 	_renderer->initCamera();
 	Input::initInput(_renderer);
 	_uiManager->init(_renderer);
-	//_chunkManager = new ChunkManager();
-	//_chunkManager->DEBUG_fillChunks(GEN_SPHERE);
-	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
+	_chunkManager = new ChunkManager();
+	_chunkManager->DEBUG_fillChunks(GEN_PERLIN);
+	_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()
 {
-	Chunk* chunk = new Chunk();
-	chunk->generateChunk(GEN_RANDOM, nullptr);
-	chunk->loadChunk(_renderer);
-	
-	//std::cout << _chunkManager->getNoiseValue(1, 1);
-
+	//Chunk* chunk = new Chunk();
+	//chunk->generateChunk(GEN_FULL, nullptr);
+	//chunk->loadChunk(_renderer);
+		
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();
 		_uiManager->NewFrame();
 
-		chunk->renderChunk(_renderer);
-		//_chunkManager->Update(_renderer);
-		//_chunkManager->Render(_renderer);
+		// chunk->renderChunk(_renderer);
+		_chunkManager->Update(_renderer);
+		_chunkManager->Render(_renderer);
 		_uiManager->Render();		
 
 		_renderer->endFrame();

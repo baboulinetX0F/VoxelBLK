@@ -30,7 +30,7 @@ void Game::init()
 	_uiManager->init(_renderer);
 	_chunkManager = new ChunkManager();
 	_chunkManager->DEBUG_fillChunks(GEN_PERLIN);
-	_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
+	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()

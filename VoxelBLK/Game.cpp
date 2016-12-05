@@ -29,7 +29,7 @@ void Game::init()
 	Input::initInput(_renderer);
 	_uiManager->init(_renderer);
 	_chunkManager = new ChunkManager();
-	_chunkManager->DEBUG_fillChunks(GEN_PERLIN);
+	_chunkManager->generateChunks(GEN_PERLIN);
 	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 

@@ -56,8 +56,8 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				float x_world = (float) (x + (_position.x * CHUNK_SIZE)) / 256;
-				float z_world = (float) (z + (_position.y * CHUNK_SIZE)) / 256;
+				float x_world = static_cast<float>(x + (_position.x * CHUNK_SIZE)) / 256;
+				float z_world = static_cast<float>(z + (_position.y * CHUNK_SIZE)) / 256;
 				int cell_height = _manager->getNoiseValue(x_world, z_world);
 				if (cell_height >= CHUNK_SIZE - 1) cell_height = CHUNK_SIZE - 1;
 				for (int y = 0; y < cell_height; y++)
@@ -204,7 +204,7 @@ void Chunk::experimental_genMesh()
 					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);					
 					
 					//Bottom face
-					if (!nearbyFaces.down) {
+					/*if (!nearbyFaces.down) {
 					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
@@ -221,7 +221,7 @@ void Chunk::experimental_genMesh()
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					}						
+					}*/						
 				
 					if (!x_seg)
 					{
@@ -292,7 +292,6 @@ void Chunk::experimental_genMesh()
 					{
 						currentQuad->w += 1;
 					}
-					_blocksCount++;
 				}
 				else if (z_seg)
 				{
@@ -322,7 +321,8 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	/*bool y_seg = false;
+	// Pass for Z-Axis quads
+	bool y_seg = false;
 	std::vector<Quad> y_quads;
 	for (int y = 0; y < WORLD_HEIGHT; y++)
 	{
@@ -338,15 +338,14 @@ void Chunk::experimental_genMesh()
 						currentQuad = new Quad();
 						currentQuad->w = 1;
 						currentQuad->x = z;
-						currentQuad->z = x;
-						currentQuad->y = y;
+						currentQuad->z = y;
+						currentQuad->y = x;
 						currentQuad->h = 1;
 					}
 					else
 					{
 						currentQuad->w += 1;
-					}
-					_blocksCount++;
+					}					
 				}
 				else if (y_seg)
 				{
@@ -374,11 +373,12 @@ void Chunk::experimental_genMesh()
 				currentQuad = nullptr;
 			}
 		}
-	}*/
+	}
+
 
 	std::cout << "XQuads Count pre-merge : " << quads.size() << std::endl; // Debug Display
 	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
-	//std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
+	std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
 
 	// TODO : Rewrite merge algorithm (to test all merges possible)
 	// Merge all quads (x-axis / z-axis)
@@ -416,20 +416,23 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	/*i_nextquad = 0;
-	while (i_nextquad < y_quads.size() - 1)
-	{
-		if ((y_quads[i_nextquad + 1].y == y_quads[i_nextquad].y + y_quads[i_nextquad].h)
-			&& (y_quads[i_nextquad + 1].w == y_quads[i_nextquad].w)
-			&& (y_quads[i_nextquad + 1].x == y_quads[i_nextquad].x)
-			&& (y_quads[i_nextquad + 1].z == y_quads[i_nextquad].z))
-		{			
-			y_quads[i_nextquad].h += y_quads[i_nextquad + 1].h;
-			y_quads.erase(y_quads.begin() + (i_nextquad + 1));
+	i_nextquad = 0;
+	if (y_quads.size() > 1) {
+		while (i_nextquad < y_quads.size() - 1)
+		{
+			if ((y_quads[i_nextquad + 1].y == y_quads[i_nextquad].y + y_quads[i_nextquad].h)
+				&& (y_quads[i_nextquad + 1].w == y_quads[i_nextquad].w)
+				&& (y_quads[i_nextquad + 1].z == y_quads[i_nextquad].z)
+				&& (y_quads[i_nextquad + 1].x == y_quads[i_nextquad].x))
+			{
+				y_quads[i_nextquad].h += y_quads[i_nextquad + 1].h;
+				y_quads.erase(y_quads.begin() + (i_nextquad + 1));
+			}
+			else
+				i_nextquad++;
 		}
-		else
-			i_nextquad++;
-	}*/
+	}
+
 
 	// Debug Display
 	std::cout << "XQuads Count post-merge : " << quads.size() << std::endl;
@@ -451,9 +454,9 @@ void Chunk::experimental_genMesh()
 		// Check if a face (quad) can discarded
 		bool front = true;
 		bool back = true;	
-		for (unsigned int x = quads[i].x; x < quads[i].x + quads[i].w; x++)
+		for (int x = quads[i].x; x < quads[i].x + quads[i].w; x++)
 		{
-			for (unsigned int y = quads[i].y; y < quads[i].y + quads[i].h; y++)
+			for (int y = quads[i].y; y < quads[i].y + quads[i].h; y++)
 			{
 				nearBlocks = getBlocksNearby(x, y, quads[i].z);
 				if (!nearBlocks.front && front)				
@@ -495,9 +498,9 @@ void Chunk::experimental_genMesh()
 		// Check if a face (quad) can discarded
 		bool left = true;
 		bool right = true;
-		for (unsigned int x = z_quads[i].x; x < z_quads[i].x + z_quads[i].w; x++)
+		for (int x = z_quads[i].x; x < z_quads[i].x + z_quads[i].w; x++)
 		{
-			for (unsigned int y = z_quads[i].y; y < z_quads[i].y + z_quads[i].h; y++)
+			for (int y = z_quads[i].y; y < z_quads[i].y + z_quads[i].h; y++)
 			{
 				nearBlocks = getBlocksNearby(z_quads[i].z, y, x);
 				if (!nearBlocks.left && left)
@@ -532,49 +535,27 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	/*color = MESH_OCCLUSION_PRIMITIVE_COLOR;
+	color = MESH_OCCLUSION_PRIMITIVE_COLOR;
 
 	for (unsigned int i = 0; i < y_quads.size(); i++)
 	{
-		// Check if a face (quad) can discarded
-		bool top = true;
-		bool down = true;
-		for (unsigned int x = y_quads[i].x; x < y_quads[i].x + y_quads[i].w; x++)
-		{
-			for (unsigned int y = y_quads[i].y; y < y_quads[i].y + y_quads[i].h; y++)
-			{
-				nearBlocks = getBlocksNearby(y, y_quads[i].z, x);
-				if (!nearBlocks.down && down)
-					down = false;
-				if (!nearBlocks.top && top)
-					top = false;
-				if (!top && !down)
-					break;
-			}
-			if (!top && !down)
-				break;
-		}
+		//Bottom face
+		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
 
-		// Left Face
-		if (!down) {
-			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		//}
+		//Top face
+		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
+		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
 
-		// Right Face
-		if (!top) {
-			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y +(y_quads[i].h-1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-			_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-			_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		}
-	}*/
+	}
 }
 
 bool Chunk::block_visible(int x, int y, int z)

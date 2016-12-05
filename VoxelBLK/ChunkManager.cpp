@@ -24,7 +24,7 @@ void ChunkManager::init()
 	
 }
 
-void ChunkManager::DEBUG_fillChunks(CHUNK_GEN_MODE d)
+void ChunkManager::generateChunks(CHUNK_GEN_MODE d)
 {
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
@@ -68,7 +68,7 @@ void ChunkManager::Render(Renderer * renderer)
 
 int ChunkManager::getNoiseValue(float x, float z)
 {	
-	return (int)(_simplex.noise(x,z) * 16);
+	return static_cast<int>(_simplex.noise(x,z) * 16);
 }
 
 bool ChunkManager::chunk_visible(int x, int y)

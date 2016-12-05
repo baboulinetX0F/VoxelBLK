@@ -131,14 +131,16 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 			_dVerticesRendered += mesh->getOcclusionPrimitive()->getVertices().size();
 			glBindVertexArray(0);			
 		}
-		else {
+		else
+		{
 			glBindVertexArray(mesh->getVAO());
 			glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
 			_dVerticesRendered += mesh->getVertices().size();
 			glBindVertexArray(0);
 		}
 	}
-	else {
+	else
+	{
 		glColorMask(true, true, true, true);
 		glDepthMask(GL_TRUE);
 	}
@@ -208,7 +210,7 @@ void Renderer::calculateFrameTime()
 
 	// If last prinf() was more than 1 sec ago printf and reset timer
 	if (currentTime - _lastTime >= 1.0) {
-		_frameTime = 1000.0 / double(_nbFrames);
+		_frameTime = 1000.0 / static_cast<double>(_nbFrames);
 		this->printDebugInfos();		
 		_nbFrames = 0;
 		_lastTime += 1.0;

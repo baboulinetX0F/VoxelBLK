@@ -23,13 +23,15 @@ class Chunk
   ~Chunk();
 
   bool isLoaded();
-
-  
+  bool isEmpty();  
 
   void loadChunk(Renderer* renderer);
   void unloadChunk(Renderer* renderer);
   void renderChunk(Renderer* renderer);
   void renderChunk(Renderer * renderer, glm::mat4 model);
+
+  // FOR DEBUG PURPOSE TO REMOVE
+  GLuint getVAOID();
   
   void generateChunk(CHUNK_GEN_MODE fill, ChunkManager* _manager);
   
@@ -41,6 +43,7 @@ class Chunk
 
 	int _blocksCount = 0;
 	bool _loaded = false;
+	bool _empty = true;
 
 	void generateMesh();
 	void experimental_genMesh();

@@ -25,6 +25,7 @@ public:
 	glm::vec3 _front;
 	glm::vec3 _up;
 	glm::vec3 _pos;
+	glm::mat4 _projection;
 	GLfloat _yaw;
 	GLfloat _pitch;
 	GLfloat _moveSpeed;

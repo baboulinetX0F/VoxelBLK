@@ -8,6 +8,10 @@ Mesh::Mesh()
 	glGenVertexArrays(1, &_VAO);	
 }
 
+Mesh::Mesh(GLuint * vao)
+{
+}
+
 Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &_VAO);

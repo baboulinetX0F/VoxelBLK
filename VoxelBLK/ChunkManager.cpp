@@ -20,8 +20,7 @@ void ChunkManager::init()
 			_chunks[x][y] = new Chunk(glm::vec2(x,y));
 			_chunkCount++;
 		}
-	}
-	
+	}	
 }
 
 void ChunkManager::generateChunks(CHUNK_GEN_MODE d)
@@ -41,13 +40,17 @@ void ChunkManager::Update(Renderer* renderer)
 	{
 		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
-			if (chunk_visible(x,y) && !_chunks[x][y]->isLoaded())
+			if (chunk_visible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
 			{
 				_chunks[x][y]->loadChunk(renderer);
-			}
+			}			
 			else if (!chunk_visible(x, y))
 			{
 				_chunks[x][y]->unloadChunk(renderer);
+			}
+			if (!_chunks[x][y]->isLoaded() && _chunks[x][y]->isEmpty())
+			{
+				std::cout << "VAO : " << _chunks[x][y]->getVAOID() << std::endl;
 			}
 		}
 	}

@@ -23,6 +23,7 @@ class Mesh
 {
 public:
 	Mesh();
+	Mesh(GLuint* vao);
 	~Mesh();
 
 	void addVertex(Vertex v);
@@ -40,6 +41,7 @@ public:
 private:
 	std::vector<Vertex> _vertices;
 	GLuint _VBO, _VAO;
+	//GLuint* _VAO;
 	Mesh* _occlusionPrimitive;
 	
 };

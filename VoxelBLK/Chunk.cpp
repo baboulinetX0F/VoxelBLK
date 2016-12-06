@@ -24,6 +24,11 @@ bool Chunk::isLoaded()
 	return _loaded;
 }
 
+bool Chunk::isEmpty()
+{
+	return _empty;
+}
+
 void Chunk::loadChunk(Renderer* renderer)
 {
 	//generateMesh();
@@ -48,6 +53,11 @@ void Chunk::renderChunk(Renderer * renderer, glm::mat4 model)
 	renderer->RenderMesh(_mesh,model);
 }
 
+GLuint Chunk::getVAOID()
+{
+	return _mesh->getVAO();
+}
+
 void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 {
 	if (genMode == GEN_PERLIN)
@@ -56,19 +66,22 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				float x_world = static_cast<float>(x + (_position.x * CHUNK_SIZE)) / 256;
-				float z_world = static_cast<float>(z + (_position.y * CHUNK_SIZE)) / 256;
+				float x_world = static_cast<float>(x + (_position.x * CHUNK_SIZE)) / 64;
+				float z_world = static_cast<float>(z + (_position.y * CHUNK_SIZE)) / 64;
 				int cell_height = _manager->getNoiseValue(x_world, z_world);
 				if (cell_height >= CHUNK_SIZE - 1) cell_height = CHUNK_SIZE - 1;
 				for (int y = 0; y < cell_height; y++)
 				{
 					_blocks[x][y][z].setActive(true);
+					if (_empty)
+						_empty = false;
 				}
 			}
 		}
 	}
 	else {
 		srand(time(NULL));
+		
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
 			for (int y = 0; y < WORLD_HEIGHT; y++)
@@ -76,16 +89,24 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 				for (int z = 0; z < CHUNK_SIZE; z++)
 				{
 					if (genMode == GEN_FULL)
+					{
 						_blocks[x][y][z].setActive(true);
+						if (_empty)
+							_empty = false;
+					}
 					else if (genMode == GEN_RANDOM)
 					{
 						_blocks[x][y][z].setActive(rand() % 2 + 1 > 1 ? true : false);
+						if (_empty)
+							_empty = false;
 					}
 					else if (genMode == GEN_SPHERE)
 					{
 						if (sqrt((float)(x - CHUNK_SIZE / 2)*(x - CHUNK_SIZE / 2) + (y - WORLD_HEIGHT / 2)*(y - WORLD_HEIGHT / 2) + (z - CHUNK_SIZE / 2)*(z - CHUNK_SIZE / 2)) <= CHUNK_SIZE / 2)
 						{
 							_blocks[x][y][z].setActive(true);
+							if (_empty)
+								_empty = false;
 						}
 					}
 
@@ -375,13 +396,16 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-
-	std::cout << "XQuads Count pre-merge : " << quads.size() << std::endl; // Debug Display
+	/* Debug Quads count Display
+	std::cout << "XQuads Count pre-merge : " << quads.size() << std::endl; 
 	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
 	std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
+	*/
 
 	// TODO : Rewrite merge algorithm (to test all merges possible)
-	// Merge all quads (x-axis / z-axis)
+	// Merge all quads (top-down/left-right/front-back)
+
+	// front/back quads merging
 	unsigned int i_nextquad = 0;
 	if (quads.size() > 1) {
 		while (i_nextquad < quads.size() - 1)
@@ -399,6 +423,7 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
+	// left/right quads merging
 	i_nextquad = 0;
 	if (z_quads.size() > 1) {
 		while (i_nextquad < z_quads.size() - 1)
@@ -416,6 +441,7 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
+	// top/down quads merging
 	i_nextquad = 0;
 	if (y_quads.size() > 1) {
 		while (i_nextquad < y_quads.size() - 1)
@@ -433,13 +459,12 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-
-	// Debug Display
+	/* Debug Quads count post-merge Display
 	std::cout << "XQuads Count post-merge : " << quads.size() << std::endl;
-	std::cout << "ZQuads Count post-merge : " << z_quads.size() << std::endl; // Debug Display
-	//std::cout << "YQuads Count post-merge : " << y_quads.size() << std::endl;
-	/*int tmp = 0;
-	for (unsigned int i = 0; i < quads.size(); i++)
+	std::cout << "ZQuads Count post-merge : " << z_quads.size() << std::endl; 
+	std::cout << "YQuads Count post-merge : " << y_quads.size() << std::endl; 		
+	
+	/*for (unsigned int i = 0; i < quads.size(); i++)
 	{
 		std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " z: " 
 			<< quads[i].z  << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
@@ -447,7 +472,7 @@ void Chunk::experimental_genMesh()
 
 	color = MESH_DEFAULT_COLOR;
 
-	// Transform quads into triangles-based quads
+	// Transform quads into triangles-based quads and send vertices to the mesh object
 	BlockFaces nearBlocks = BlockFaces{ true,true,true,true,true,true };
 	for (unsigned int i = 0; i < quads.size(); i++)
 	{
@@ -537,6 +562,7 @@ void Chunk::experimental_genMesh()
 
 	color = MESH_OCCLUSION_PRIMITIVE_COLOR;
 
+	// TODO : Add neighboors face culling for bottom/top faces
 	for (unsigned int i = 0; i < y_quads.size(); i++)
 	{
 		//Bottom face

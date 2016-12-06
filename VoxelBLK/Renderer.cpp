@@ -116,20 +116,38 @@ void Renderer::UnloadMesh(Mesh * mesh)
 
 void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 {
-	shader->Use();
-	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1, GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
-	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
-	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-	if (occlusionTest(mesh))
-	{		
-		glColorMask(true, true, true, true);
-		glDepthMask(GL_TRUE);
-		if (_pRenderOcclusionPrimitive)
+	if (mesh->getVertices().size() > 0) {
+		shader->Use();
+		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1, GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
+		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		if (_pEnableOcclusionQueryCulling)
 		{
-			glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
-			glDrawArrays(GL_TRIANGLES, 0, mesh->getOcclusionPrimitive()->getVertices().size());
-			_dVerticesRendered += mesh->getOcclusionPrimitive()->getVertices().size();
-			glBindVertexArray(0);			
+			printf("Pourquoi tu marche pas enculé ?\n");
+			if (occlusionTest(mesh))
+			{
+				glColorMask(true, true, true, true);
+				glDepthMask(GL_TRUE);
+				if (_pRenderOcclusionPrimitive)
+				{
+					glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
+					glDrawArrays(GL_TRIANGLES, 0, mesh->getOcclusionPrimitive()->getVertices().size());
+					_dVerticesRendered += mesh->getOcclusionPrimitive()->getVertices().size();
+					glBindVertexArray(0);
+				}
+				else
+				{
+					glBindVertexArray(mesh->getVAO());
+					glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
+					_dVerticesRendered += mesh->getVertices().size();
+					glBindVertexArray(0);
+				}
+			}
+			else
+			{
+				glColorMask(true, true, true, true);
+				glDepthMask(GL_TRUE);
+			}
 		}
 		else
 		{
@@ -138,11 +156,6 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 			_dVerticesRendered += mesh->getVertices().size();
 			glBindVertexArray(0);
 		}
-	}
-	else
-	{
-		glColorMask(true, true, true, true);
-		glDepthMask(GL_TRUE);
 	}
 }
 
@@ -228,8 +241,8 @@ bool Renderer::occlusionTest(Mesh * mesh)
 	glEndQuery(GL_SAMPLES_PASSED);
 	// Now get the number of pixels passed
 	int iSamplesPassed = 0;
-	glGetQueryObjectiv(_occlusionQuery, GL_QUERY_RESULT, &iSamplesPassed);
-	glBindVertexArray(0);	
+	glGetQueryObjectiv(_occlusionQuery, GL_QUERY_RESULT, &iSamplesPassed);		
+	glBindVertexArray(0);
 	if (iSamplesPassed > 0)
 		return true;
 	else

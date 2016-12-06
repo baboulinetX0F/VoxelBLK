@@ -64,6 +64,7 @@ private:
 
 	// debug parameter
 	bool _pRenderOcclusionPrimitive = false;
+	bool _pEnableOcclusionQueryCulling = false;
 	
 	// Methods
 	void printDebugInfos();

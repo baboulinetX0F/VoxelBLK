@@ -27,8 +27,8 @@ void UIManager::NewFrame()
 void UIManager::Render()
 {
 	// Debug Window
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	ImGui::Text("Vertices rendered : %d ", _renderer->getVerticesRendered());
+	ImGui::Text("Frametime avg. %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::Text("Vertices count : %d ", _renderer->getVerticesRendered());
 
 	// Keep Fill mode for UI on Wireframe render
 	RenderMode tmp = _renderer->getRenderMode();

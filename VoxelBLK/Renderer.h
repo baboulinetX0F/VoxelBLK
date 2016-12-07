@@ -17,7 +17,7 @@ enum RenderMode
 
 class Renderer
 {
-public:
+ public:
 	Renderer();
 	~Renderer();
 
@@ -46,7 +46,7 @@ public:
 
 	const int getVerticesRendered();
 
-private:
+ private:
 	GLFWwindow* _window;
 	int _windowWidth, _windowHeight;
 	Camera* _camera;
@@ -72,4 +72,3 @@ private:
 
 	bool occlusionTest(Mesh* mesh);
 };
-

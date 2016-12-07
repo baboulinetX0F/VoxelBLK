@@ -53,11 +53,6 @@ void Chunk::renderChunk(Renderer * renderer, glm::mat4 model)
 	renderer->RenderMesh(_mesh,model);
 }
 
-GLuint Chunk::getVAOID()
-{
-	return _mesh->getVAO();
-}
-
 void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 {
 	if (genMode == GEN_PERLIN)

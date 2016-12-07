@@ -122,8 +122,7 @@ void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
 		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
 		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		if (_pEnableOcclusionQueryCulling)
-		{
-			printf("Pourquoi tu marche pas enculé ?\n");
+		{			
 			if (occlusionTest(mesh))
 			{
 				glColorMask(true, true, true, true);

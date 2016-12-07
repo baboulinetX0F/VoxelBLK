@@ -47,11 +47,7 @@ void ChunkManager::Update(Renderer* renderer)
 			else if (!chunk_visible(x, y))
 			{
 				_chunks[x][y]->unloadChunk(renderer);
-			}
-			if (!_chunks[x][y]->isLoaded() && _chunks[x][y]->isEmpty())
-			{
-				std::cout << "VAO : " << _chunks[x][y]->getVAOID() << std::endl;
-			}
+			}		
 		}
 	}
 }

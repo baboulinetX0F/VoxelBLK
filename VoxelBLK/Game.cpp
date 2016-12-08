@@ -15,11 +15,11 @@ Game::~Game()
 
 void Game::run()
 {
-	init();
+	Initialize();
 	gameLoop();
 }
 
-void Game::init()
+void Game::Initialize()
 {
 	_renderer = new Renderer();
 	_uiManager = new UIManager();
@@ -27,9 +27,9 @@ void Game::init()
 	_renderer->initDefaultShader();
 	_renderer->initCamera();
 	Input::initInput(_renderer);
-	_uiManager->init(_renderer);
-	_chunkManager = new ChunkManager();
-	_chunkManager->generateChunks(GEN_PERLIN);
+	_uiManager->Initialize(_renderer);
+	_chunkManager = new ChunkManager(_renderer);
+	_chunkManager->GenerateChunks(GEN_PERLIN);
 	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
@@ -98,11 +98,10 @@ void Game::gameLoop()
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();
-		//_uiManager->NewFrame();
+		_uiManager->NewFrame();
 		_chunkManager->Update(_renderer);
-		_chunkManager->Render(_renderer);
-		//_renderer->RenderMesh(frustum);
-		//_uiManager->Render();
+		_chunkManager->Render(_renderer);		
+		_uiManager->Render();
 		_renderer->endFrame();
 	}	
 }

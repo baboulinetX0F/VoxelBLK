@@ -13,7 +13,7 @@ UIManager::~UIManager()
 {
 }
 
-void UIManager::init(Renderer * renderer)
+void UIManager::Initialize(Renderer * renderer)
 {
 	_renderer = renderer;
 	ImGui_ImplGlfwGL3_Init(renderer->getWindow(), false);	
@@ -27,7 +27,8 @@ void UIManager::NewFrame()
 void UIManager::Render()
 {
 	// Debug Window
-	ImGui::Text("Frametime avg. %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::Text("Frametime avg. %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+		ImGui::GetIO().Framerate);
 	ImGui::Text("Vertices count : %d ", _renderer->getVerticesRendered());
 
 	// Keep Fill mode for UI on Wireframe render

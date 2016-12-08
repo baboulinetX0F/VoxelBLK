@@ -8,7 +8,7 @@ public:
 	UIManager();
 	~UIManager();
 
-	void init(Renderer* renderer);
+	void Initialize(Renderer* renderer);
 
 	void NewFrame();
 	void Render();

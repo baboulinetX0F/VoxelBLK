@@ -1,9 +1,10 @@
 #include "ChunkManager.h"
 
 
-ChunkManager::ChunkManager()
+ChunkManager::ChunkManager(Renderer* renderer)
 {
-	init();
+	InitializeBuffers(renderer);
+	Initialize();
 }
 
 
@@ -11,7 +12,7 @@ ChunkManager::~ChunkManager()
 {
 }
 
-void ChunkManager::init()
+void ChunkManager::Initialize()
 {
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{		
@@ -23,7 +24,14 @@ void ChunkManager::init()
 	}	
 }
 
-void ChunkManager::generateChunks(CHUNK_GEN_MODE d)
+void ChunkManager::InitializeBuffers(Renderer* renderer)
+{
+	_chunksVAO = renderer->createVAO();	
+	_chunksVBO = new ManagedVBO(_chunksVAO, (CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE)
+		* (36 * VERTEX_COMPONENT_COUNT * sizeof(float)), CHUNKS_NUMBER_X * CHUNKS_NUMBER_Y);
+}
+
+void ChunkManager::GenerateChunks(CHUNK_GEN_MODE d)
 {
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
@@ -40,11 +48,11 @@ void ChunkManager::Update(Renderer* renderer)
 	{
 		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
-			if (chunk_visible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
+			if (IsChunkVisible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
 			{
 				_chunks[x][y]->loadChunk(renderer);
 			}			
-			else if (!chunk_visible(x, y))
+			else if (!IsChunkVisible(x, y))
 			{
 				_chunks[x][y]->unloadChunk(renderer);
 			}		
@@ -70,7 +78,7 @@ int ChunkManager::getNoiseValue(float x, float z)
 	return static_cast<int>(_simplex.noise(x,z) * 16);
 }
 
-bool ChunkManager::chunk_visible(int x, int y)
+bool ChunkManager::IsChunkVisible(int x, int y)
 {
 	return true;
 }

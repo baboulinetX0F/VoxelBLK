@@ -97,7 +97,9 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 					}
 					else if (genMode == GEN_SPHERE)
 					{
-						if (sqrt((float)(x - CHUNK_SIZE / 2)*(x - CHUNK_SIZE / 2) + (y - WORLD_HEIGHT / 2)*(y - WORLD_HEIGHT / 2) + (z - CHUNK_SIZE / 2)*(z - CHUNK_SIZE / 2)) <= CHUNK_SIZE / 2)
+						if (sqrt((float)(x - CHUNK_SIZE / 2)*(x - CHUNK_SIZE / 2)
+							+ (y - WORLD_HEIGHT / 2)*(y - WORLD_HEIGHT / 2)
+							+ (z - CHUNK_SIZE / 2)*(z - CHUNK_SIZE / 2)) <= CHUNK_SIZE / 2)
 						{
 							_blocks[x][y][z].setActive(true);
 							if (_empty)
@@ -121,7 +123,8 @@ void Chunk::generateMesh()
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{				
 				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
-					glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
+					glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand()
+						/ (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
 
 					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);
 

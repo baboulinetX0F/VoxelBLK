@@ -28,6 +28,10 @@ class Renderer
 
 	void beginFrame();
 	void endFrame();
+		
+	GLuint createVAO();
+	GLuint createVBO();
+	GLuint createVBOAllocated(GLuint VAO, GLuint dataSize);
 
 	// Methods related to mesh
 	void LoadMesh(Mesh* mesh);
@@ -45,6 +49,7 @@ class Renderer
 	void initDefaultShader();
 
 	const int getVerticesRendered();
+	GLfloat GetRenderingDistance();
 
  private:
 	GLFWwindow* _window;
@@ -55,20 +60,19 @@ class Renderer
 	Shader* _defaultShader;
 	GLuint _occlusionQuery;
 
-	// debug attributes (frametime, drawcalls etc...)
+	// Debug Informations
 	double _lastTime;
 	int _nbFrames;
-	double _frameTime;
+	double _dFrameTime;
 	int _dVerticesRendered;
+		
 	RenderMode _dRenderMode = RenderMode::RENDER_FILL;
-
-	// debug parameter
+	GLfloat _pRenderingDistance = 100.0f;
 	bool _pRenderOcclusionPrimitive = false;
-	bool _pEnableOcclusionQueryCulling = false;
-	
-	// Methods
-	void printDebugInfos();
-	void calculateFrameTime();
+	bool _pEnableOcclusionQueryCulling = true;	
 
+	void printDebugInfos();
+	void calculateFrameTime();	
+	
 	bool occlusionTest(Mesh* mesh);
 };

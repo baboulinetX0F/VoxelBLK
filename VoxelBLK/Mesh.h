@@ -6,7 +6,7 @@
 #include <GL\glew.h>
 #include <glm.hpp>
 
-static const int VERTEX_COMPONENT_COUNT = 7;
+#include "ManagedVBO.h"
 
 struct Vertex
 {
@@ -15,6 +15,13 @@ struct Vertex
 
 	Vertex(glm::vec3 pos, glm::vec4 col) : position(pos), color(col) { }
 };
+static const int VERTEX_COMPONENT_COUNT = 7;
+static const VertexAttrib VERTEX_DEFAULT_ATTRIBS[] =
+{
+	VertexAttrib(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)0),
+	VertexAttrib(1, 4, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)(3 * sizeof(float)))
+};
+
 
 static const glm::vec4 MESH_DEFAULT_COLOR = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 static const glm::vec4 MESH_OCCLUSION_PRIMITIVE_COLOR = glm::vec4(0.95f, 0.53f, 0.25f, 0.5f);
@@ -41,7 +48,6 @@ public:
 private:
 	std::vector<Vertex> _vertices;
 	GLuint _VBO, _VAO;
-	//GLuint* _VAO;
 	Mesh* _occlusionPrimitive;
 	
 };

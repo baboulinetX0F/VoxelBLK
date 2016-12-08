@@ -82,6 +82,32 @@ void Renderer::endFrame()
 	glfwSwapBuffers(_window);
 }
 
+GLuint Renderer::createVAO()
+{
+	GLuint newVAO;
+	glGenVertexArrays(1, &newVAO);
+	return newVAO;
+}
+
+GLuint Renderer::createVBO()
+{
+	GLuint newVBO;
+	glGenBuffers(1, &newVBO);
+	return newVBO;
+}
+
+GLuint Renderer::createVBOAllocated(GLuint VAO, GLuint dataSize)
+{
+	GLuint newVBO;
+	glGenBuffers(1, &newVBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, newVBO);
+	glBufferData(GL_ARRAY_BUFFER, dataSize, nullptr, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	return newVBO;
+}
+
 void Renderer::LoadMesh(Mesh * mesh)
 {	
 	GLfloat* data = mesh->verticesToArray();
@@ -192,7 +218,8 @@ const RenderMode Renderer::getRenderMode()
 void Renderer::initCamera()
 {
 	_camera = new Camera();
-	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight, 0.1f, 100.0f);
+	_projection = glm::perspective(45.0f, (GLfloat)_windowWidth / (GLfloat)_windowHeight,
+		0.1f, _pRenderingDistance);
 }
 
 Camera * Renderer::getCamera()
@@ -212,7 +239,8 @@ const int Renderer::getVerticesRendered()
 
 void Renderer::printDebugInfos()
 {
-	printf("%f ms/frame | %f fps | %d vertices rendered\n", _frameTime, 1000 / _frameTime, _dVerticesRendered);
+	printf("%f ms/frame | %f fps | %d vertices rendered\n", _dFrameTime, 1000 / _dFrameTime, 
+		_dVerticesRendered);
 }
 
 void Renderer::calculateFrameTime()
@@ -222,11 +250,16 @@ void Renderer::calculateFrameTime()
 
 	// If last prinf() was more than 1 sec ago printf and reset timer
 	if (currentTime - _lastTime >= 1.0) {
-		_frameTime = 1000.0 / static_cast<double>(_nbFrames);
+		_dFrameTime = 1000.0 / static_cast<double>(_nbFrames);
 		this->printDebugInfos();		
 		_nbFrames = 0;
 		_lastTime += 1.0;
 	}
+}
+
+GLfloat Renderer::GetRenderingDistance()
+{
+	return _pRenderingDistance;
 }
 
 bool Renderer::occlusionTest(Mesh * mesh)

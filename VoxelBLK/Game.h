@@ -19,6 +19,6 @@ private:
 	UIManager* _uiManager;
 
 	// Methods
-	void init();
+	void Initialize();
 	void gameLoop();
 };

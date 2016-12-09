@@ -26,23 +26,28 @@ class Chunk
   bool isEmpty();  
 
   void loadChunk(Renderer* renderer);
+  void exp_loadChunk(ChunkManager* manager, Renderer* renderer);
   void unloadChunk(Renderer* renderer);
   void renderChunk(Renderer* renderer);
   void renderChunk(Renderer * renderer, glm::mat4 model);
     
   void generateChunk(CHUNK_GEN_MODE fill, ChunkManager* _manager);
+
+  unsigned int GetVerticesCount();
   
  private:
     Block _blocks[CHUNK_SIZE][WORLD_HEIGHT][CHUNK_SIZE]; 
     glm::vec2 _position = glm::vec2(0, 0);
     Mesh* _mesh;
+	std::vector<Vertex> _vertices;
     Mesh* _occlusionMesh;
 
     int _blocksCount = 0;
     bool _loaded = false;
     bool _empty = true;
 
-    void generateMesh();
+	GLfloat* GetVerticesData();
+	void generateMesh();
     void experimental_genMesh();
     bool block_visible(int x, int y, int z);
 

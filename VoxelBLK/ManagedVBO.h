@@ -33,7 +33,7 @@ public:
 	GLuint GetVAO();
 	GLuint GetVBO();
 
-	unsigned int LoadData(GLfloat* data, VertexAttrib* attrib);
+	unsigned int LoadData(GLfloat* data, VertexAttrib* attrib, unsigned int size);
 	void UnloadData(unsigned int index);
 
 private:

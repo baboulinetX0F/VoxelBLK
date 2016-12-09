@@ -27,6 +27,7 @@ void UIManager::NewFrame()
 void UIManager::Render()
 {
 	// Debug Window
+	ImGui::Text("%s | %s", glGetString(GL_RENDERER), glGetString(GL_VENDOR));
 	ImGui::Text("Frametime avg. %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
 		ImGui::GetIO().Framerate);
 	ImGui::Text("Vertices count : %d ", _renderer->getVerticesRendered());

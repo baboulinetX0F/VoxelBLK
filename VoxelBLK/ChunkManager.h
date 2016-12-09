@@ -19,6 +19,7 @@ public:
 	void Render(Renderer* renderer);
 
 	int getNoiseValue(float x, float z);
+	ManagedVBO* getVBO();
 
 private:
 	Chunk* _chunks[CHUNKS_NUMBER_X][CHUNKS_NUMBER_Y];

@@ -44,13 +44,15 @@ void ChunkManager::GenerateChunks(CHUNK_GEN_MODE d)
 
 void ChunkManager::Update(Renderer* renderer)
 {
-	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
+	for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 	{
-		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
+		for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 		{
 			if (IsChunkVisible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
 			{
-				_chunks[x][y]->loadChunk(renderer);
+				//_chunks[x][y]->loadChunk(renderer);
+				_chunks[x][y]->exp_loadChunk(this, renderer);
+				std::cout << "Loading Chunk...\n";
 			}			
 			else if (!IsChunkVisible(x, y))
 			{
@@ -62,6 +64,7 @@ void ChunkManager::Update(Renderer* renderer)
 
 void ChunkManager::Render(Renderer * renderer)
 {
+	/*
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
 		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
@@ -70,12 +73,31 @@ void ChunkManager::Render(Renderer * renderer)
 			model = glm::translate(model, glm::vec3(x*CHUNK_SIZE, 0.0f, y*CHUNK_SIZE));
 			_chunks[x][y]->renderChunk(renderer, model);
 		}
+	}*/
+
+	unsigned int vtxCount = 0;
+	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
+	{
+		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
+		{
+			if (_chunks[x][y]->isLoaded())
+			{
+				vtxCount += _chunks[x][y]->GetVerticesCount();
+			}
+		}
 	}
+	
+	renderer->Render(_chunksVBO, vtxCount);	
 }
 
 int ChunkManager::getNoiseValue(float x, float z)
 {	
 	return static_cast<int>(_simplex.noise(x,z) * 16);
+}
+
+ManagedVBO * ChunkManager::getVBO()
+{
+	return _chunksVBO;
 }
 
 bool ChunkManager::IsChunkVisible(int x, int y)

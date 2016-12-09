@@ -37,6 +37,19 @@ void Chunk::loadChunk(Renderer* renderer)
 	_loaded = true;
 }
 
+void Chunk::exp_loadChunk(ChunkManager * manager, Renderer* renderer)
+{
+	experimental_genMesh();
+	if (renderer->LoadToManagedVBO(manager->getVBO(), GetVerticesData(), VERTEX_DEFAULT_ATTRIBS,
+		_vertices.size() * VERTEX_COMPONENT_COUNT * sizeof(GLfloat)) != -1)
+	{
+		_loaded = true;
+		std::cout << "Loaded.\n";
+	}
+	else
+		_loaded = false;
+}
+
 void Chunk::unloadChunk(Renderer * renderer)
 {
 	renderer->UnloadMesh(_mesh);
@@ -111,6 +124,27 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 			}
 		}
 	}
+}
+
+unsigned int Chunk::GetVerticesCount()
+{
+	return _vertices.size();
+}
+
+GLfloat * Chunk::GetVerticesData()
+{
+	GLfloat* output = new GLfloat[_vertices.size() * VERTEX_COMPONENT_COUNT];
+	for (unsigned int i = 0; i < _vertices.size(); i++)
+	{
+		output[(i* VERTEX_COMPONENT_COUNT)] = _vertices.at(i).position.x;
+		output[(i*VERTEX_COMPONENT_COUNT) + 1] = _vertices.at(i).position.y;
+		output[(i*VERTEX_COMPONENT_COUNT) + 2] = _vertices.at(i).position.z;
+		output[(i* VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).color.r;
+		output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).color.g;
+		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).color.b;
+		output[(i*VERTEX_COMPONENT_COUNT) + 6] = _vertices.at(i).color.a;
+	}
+	return output;
 }
 
 void Chunk::generateMesh()
@@ -239,7 +273,7 @@ void Chunk::experimental_genMesh()
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
 					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
 					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
+					_vertices.push_back(Vertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
 					}*/						
 				
 					if (!x_seg)
@@ -495,22 +529,22 @@ void Chunk::experimental_genMesh()
 		
 		// Front face
 		if (!back) {
-			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color);
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color));
 		}
 
 		// Back face
 		if (!front) {
-			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color);
-			_mesh->addVertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color);
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color));
 		}
 	}
 	
@@ -539,22 +573,22 @@ void Chunk::experimental_genMesh()
 		
 		// Left Face
 		if (!left) {
-			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
 		}
 
 		// Right Face
 		if (!right) {
-			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
-			_mesh->addVertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color);
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
 		}
 	}
 
@@ -564,21 +598,28 @@ void Chunk::experimental_genMesh()
 	for (unsigned int i = 0; i < y_quads.size(); i++)
 	{
 		//Bottom face
-		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
 
 		//Top face
-		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
-		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-		_mesh->addVertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color);
-		_mesh->addVertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color);
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
 
+	}
+
+	// Transform vertices positions into world position
+	for (unsigned int i = 0; i < _vertices.size(); i++)
+	{		
+		_vertices[i].position.x += _position.x * CHUNK_SIZE;
+		_vertices[i].position.z += _position.y * CHUNK_SIZE;
 	}
 }
 

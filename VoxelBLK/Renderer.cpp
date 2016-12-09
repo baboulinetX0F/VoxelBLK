@@ -21,8 +21,8 @@ Renderer::~Renderer()
 
 void Renderer::initWindow(const char * title, int width, int height)
 {
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
@@ -50,7 +50,7 @@ void Renderer::initWindow(const char * title, int width, int height)
 	glViewport(0, 0, vp_width, vp_height);
 
 	glEnable(GL_DEPTH_TEST);
-	glGenQueries(1, &_occlusionQuery);
+	glGenQueries(1, &_occlusionQuery);	
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -106,6 +106,30 @@ GLuint Renderer::createVBOAllocated(GLuint VAO, GLuint dataSize)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	return newVBO;
+}
+unsigned int Renderer::LoadToManagedVBO(ManagedVBO * vbo, GLfloat * data, VertexAttrib* attrib, unsigned int size)
+{
+	return vbo->LoadData(data, attrib, size);
+}
+
+void Renderer::Render(ManagedVBO* vbo, unsigned int vtxcount)
+{
+	glm::mat4 model = glm::mat4();
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	_defaultShader->Use();
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1,
+		GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1,
+		GL_FALSE, glm::value_ptr(_projection));
+	glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1,
+		GL_FALSE, glm::value_ptr(model));
+
+	glBindVertexArray(vbo->GetVAO());
+	glBindBuffer(GL_ARRAY_BUFFER, vbo->GetVBO());	
+		glDrawArrays(GL_TRIANGLES, 0, vtxcount);
+		_dVerticesRendered += vtxcount;
+	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindVertexArray(0);
 }
 
 void Renderer::LoadMesh(Mesh * mesh)

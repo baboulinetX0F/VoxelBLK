@@ -16,7 +16,7 @@ struct Vertex
 	Vertex(glm::vec3 pos, glm::vec4 col) : position(pos), color(col) { }
 };
 static const int VERTEX_COMPONENT_COUNT = 7;
-static const VertexAttrib VERTEX_DEFAULT_ATTRIBS[] =
+static VertexAttrib VERTEX_DEFAULT_ATTRIBS[] =
 {
 	VertexAttrib(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)0),
 	VertexAttrib(1, 4, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)(3 * sizeof(float)))

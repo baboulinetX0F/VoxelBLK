@@ -32,6 +32,10 @@ class Renderer
 	GLuint createVAO();
 	GLuint createVBO();
 	GLuint createVBOAllocated(GLuint VAO, GLuint dataSize);
+	unsigned int LoadToManagedVBO(ManagedVBO* vbo, GLfloat* data, VertexAttrib* attrib, unsigned int size);
+
+	// A rename
+	void Render(ManagedVBO* vbo, unsigned int vtxcount);
 
 	// Methods related to mesh
 	void LoadMesh(Mesh* mesh);
@@ -59,7 +63,7 @@ class Renderer
 
 	Shader* _defaultShader;
 	GLuint _occlusionQuery;
-
+		
 	// Debug Informations
 	double _lastTime;
 	int _nbFrames;
@@ -69,7 +73,7 @@ class Renderer
 	RenderMode _dRenderMode = RenderMode::RENDER_FILL;
 	GLfloat _pRenderingDistance = 100.0f;
 	bool _pRenderOcclusionPrimitive = false;
-	bool _pEnableOcclusionQueryCulling = true;	
+	bool _pEnableOcclusionQueryCulling = false;	
 
 	void printDebugInfos();
 	void calculateFrameTime();	

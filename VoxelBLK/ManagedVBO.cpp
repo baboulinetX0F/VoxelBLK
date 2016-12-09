@@ -6,10 +6,10 @@ ManagedVBO::ManagedVBO(GLuint VAO, unsigned int blockSize, unsigned int blockCou
 	_VAO = VAO;
 	_blockSize = blockSize;
 	_bufferSize = blockSize * blockCount;
-
+	
 	glBindVertexArray(_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-	glBufferData(GL_ARRAY_BUFFER, _bufferSize, nullptr, GL_STATIC_DRAW);	
+	glBufferData(GL_ARRAY_BUFFER, _bufferSize, NULL, GL_STATIC_DRAW);	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -33,30 +33,28 @@ GLuint ManagedVBO::GetVBO()
 	return _VBO;
 }
 
-unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib)
+unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned int size)
 {
 	if (sizeof(data) > _blockSize)
-		std::cerr << "WARNING : The data passed to load into the managed VBO is too large. Risk of losing data\n";
-	if (_blocksAvailable.size() >= 0)
+		std::cout << "WARNING : The data passed to load into the managed VBO is too large. Risk of losing data\n";
+	if (_blocksAvailable.size() > 0)
 	{
 		glBindVertexArray(_VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, _blockSize * _blocksAvailable.top(), _blockSize, data);
-
-		if (attrib != nullptr) {
-			int i = 0;
-			for (VertexAttrib* ptr = &attrib[i]; ptr != nullptr; ptr = &attrib[i])
-			{
-				glVertexAttribPointer(ptr->index, ptr->size, ptr->type, ptr->normalized,
-					ptr->stride, ptr->pointer);
-				glEnableVertexAttribArray(ptr->index);
-				i++;
-			}
-		}
-
+		glBufferSubData(GL_ARRAY_BUFFER, _blocksAvailable.top() * _blockSize , size, data);
+		if (attrib != nullptr) {		
+			glVertexAttribPointer(attrib[0].index, attrib[0].size, attrib[0].type, attrib[0].normalized,
+				attrib[0].stride, attrib[0].pointer);
+			glEnableVertexAttribArray(attrib[0].index);
+			glVertexAttribPointer(attrib[1].index, attrib[1].size, attrib[1].type, attrib[1].normalized,
+				attrib[1].stride, attrib[1].pointer);
+			glEnableVertexAttribArray(attrib[1].index);
+			
+		}		
 		_blocksAvailable.pop();
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+		return 0;
 	}
 	else
 		return -1;

@@ -102,7 +102,7 @@ GLuint Renderer::createVBOAllocated(GLuint VAO, GLuint dataSize)
 	glGenBuffers(1, &newVBO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, newVBO);
-	glBufferData(GL_ARRAY_BUFFER, dataSize, nullptr, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, dataSize, nullptr, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	return newVBO;
@@ -126,7 +126,7 @@ void Renderer::Render(ManagedVBO* vbo, unsigned int vtxcount)
 
 	glBindVertexArray(vbo->GetVAO());
 	glBindBuffer(GL_ARRAY_BUFFER, vbo->GetVBO());	
-		glDrawArrays(GL_TRIANGLES, 0, vtxcount);
+		glDrawArrays(GL_TRIANGLES, 0, vbo->GetCurrentMax());
 		_dVerticesRendered += vtxcount;
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindVertexArray(0);

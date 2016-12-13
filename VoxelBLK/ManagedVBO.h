@@ -5,6 +5,7 @@
 #include <glm.hpp>
 
 #include <stack>
+#include <vector>
 #include <iostream>
 
 struct VertexAttrib
@@ -32,6 +33,7 @@ public:
 
 	GLuint GetVAO();
 	GLuint GetVBO();
+	const unsigned int GetCurrentMax();
 
 	unsigned int LoadData(GLfloat* data, VertexAttrib* attrib, unsigned int size);
 	void UnloadData(unsigned int index);
@@ -40,5 +42,6 @@ private:
 	GLuint _VBO, _VAO;
 	unsigned int _blockSize;
 	unsigned int _bufferSize;
+	unsigned int _currentMax;
 	std::stack<int> _blocksAvailable;
 };

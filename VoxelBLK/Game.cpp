@@ -29,8 +29,8 @@ void Game::Initialize()
 	Input::initInput(_renderer);
 	_uiManager->Initialize(_renderer);
 	_chunkManager = new ChunkManager(_renderer);
-	_chunkManager->GenerateChunks(GEN_FULL);
-	_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
+	_chunkManager->GenerateChunks(GEN_RANDOM);
+	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()

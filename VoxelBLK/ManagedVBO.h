@@ -6,6 +6,7 @@
 
 #include <stack>
 #include <vector>
+#include <tuple>
 #include <iostream>
 
 struct VertexAttrib
@@ -20,9 +21,7 @@ struct VertexAttrib
 	VertexAttrib(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
 		const GLvoid * pointer) : index(index), size(size), type(type), normalized(normalized),
 		stride(stride), pointer(pointer)
-	{
-
-	}
+	{ }
 };
 
 class ManagedVBO

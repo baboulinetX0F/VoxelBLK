@@ -46,7 +46,7 @@ void ChunkManager::Update(Renderer* renderer)
 {
 	for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 	{
-		for (int x = 0; x < CHUNKS_NUMBER_X; x++)
+		for (int x = 0; x < CHUNKS_NUMBER_X; x++)  
 		{
 			if (IsChunkVisible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
 			{

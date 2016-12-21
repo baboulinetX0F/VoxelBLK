@@ -44,7 +44,7 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 	if (sizeof(data) > _blockSize)
 		std::cout << "WARNING : The data passed to load into the managed VBO is too large. Risk of losing data\n";
 	if (_blocksAvailable.size() > 0)
-	{		
+	{
 		glBindVertexArray(_VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, _blocksAvailable.top() * _blockSize , size, data);

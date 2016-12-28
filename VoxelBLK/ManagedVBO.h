@@ -7,6 +7,7 @@
 #include <stack>
 #include <vector>
 #include <tuple>
+#include <map>
 #include <iostream>
 
 struct VertexAttrib
@@ -35,6 +36,7 @@ public:
 	const unsigned int GetCurrentMax();
 
 	unsigned int LoadData(GLfloat* data, VertexAttrib* attrib, unsigned int size);
+	void LoadDataExp(GLfloat* data);
 	void UnloadData(unsigned int index);
 
 private:
@@ -43,4 +45,7 @@ private:
 	unsigned int _bufferSize;
 	unsigned int _currentMax;
 	std::stack<int> _blocksAvailable;
+
+	// item 1 : block_index | item 2 : block_size	
+	std::vector<std::map<int, unsigned int>> _blocks;
 };

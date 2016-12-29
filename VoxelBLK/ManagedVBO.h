@@ -34,10 +34,13 @@ public:
 	GLuint GetVAO();
 	GLuint GetVBO();
 	const unsigned int GetCurrentMax();
+	const unsigned int GetBlockSize();
 
 	unsigned int LoadData(GLfloat* data, VertexAttrib* attrib, unsigned int size);
-	void LoadDataExp(GLfloat* data);
 	void UnloadData(unsigned int index);
+
+	// item 1 : block_index | item 2 : block_size	
+	std::map<int, unsigned int> _blocks;
 
 private:
 	GLuint _VBO, _VAO;
@@ -46,6 +49,5 @@ private:
 	unsigned int _currentMax;
 	std::stack<int> _blocksAvailable;
 
-	// item 1 : block_index | item 2 : block_size	
-	std::vector<std::map<int, unsigned int>> _blocks;
+	
 };

@@ -125,10 +125,16 @@ void Renderer::Render(ManagedVBO* vbo, unsigned int vtxcount)
 		GL_FALSE, glm::value_ptr(model));
 
 	glBindVertexArray(vbo->GetVAO());
-	glBindBuffer(GL_ARRAY_BUFFER, vbo->GetVBO());	
-		glDrawArrays(GL_TRIANGLES, 0, vbo->GetCurrentMax());		
-		_dVerticesRendered += vtxcount;
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+
+	for (std::map<int, unsigned int>::iterator ite = vbo->_blocks.begin();
+		ite != vbo->_blocks.end(); ite++)
+	{
+		glDrawArrays(GL_TRIANGLES,
+			(ite->first * vbo->GetBlockSize()) / (VERTEX_COMPONENT_COUNT * sizeof(float)),
+			ite->second / (VERTEX_COMPONENT_COUNT * sizeof(float)));
+		_dVerticesRendered += ite->second / (VERTEX_COMPONENT_COUNT * sizeof(float));
+	}
+
 	glBindVertexArray(0);
 }
 

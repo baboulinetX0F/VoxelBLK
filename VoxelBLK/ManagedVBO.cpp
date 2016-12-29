@@ -39,6 +39,11 @@ const unsigned int ManagedVBO::GetCurrentMax()
 	return _currentMax;
 }
 
+const unsigned int ManagedVBO::GetBlockSize()
+{
+	return _blockSize;
+}
+
 unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned int size)
 {
 	if (sizeof(data) > _blockSize)
@@ -48,7 +53,6 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 		glBindVertexArray(_VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, _blocksAvailable.top() * _blockSize , size, data);
-
 		if (attrib != nullptr) {		
 			glVertexAttribPointer(attrib[0].index, attrib[0].size, attrib[0].type, attrib[0].normalized,
 				attrib[0].stride, attrib[0].pointer);
@@ -58,9 +62,11 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 			glEnableVertexAttribArray(attrib[1].index);
 			
 		}
-
 		if (_blocksAvailable.top() * _blockSize > _currentMax)
-			_currentMax = _blocksAvailable.top() * _blockSize;
+			_currentMax = _blocksAvailable.top() * _blockSize;				
+		
+		_blocks[_blocksAvailable.top()] = size;
+
 		_blocksAvailable.pop();
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
@@ -70,18 +76,8 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 		return -1;
 }
 
-void ManagedVBO::LoadDataExp(GLfloat* data)
-{
-	if (sizeof(data) > _blockSize)
-		std::cout << "WARNING : The data passed to load into the managed VBO is too large. Risk of losing data\n";
-	if (_blocksAvailable.size() > 0)
-	{
-		glBindVertexArray(_VAO);
-	}
-	
-}
-
 void ManagedVBO::UnloadData(unsigned int index)
 {
 	_blocksAvailable.push(index);
 }
+

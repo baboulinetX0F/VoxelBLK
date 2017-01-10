@@ -73,7 +73,7 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
-			{
+			{				
 				float x_world = static_cast<float>(x + (_position.x * CHUNK_SIZE)) / 64;
 				float z_world = static_cast<float>(z + (_position.y * CHUNK_SIZE)) / 64;
 				int cell_height = _manager->getNoiseValue(x_world, z_world);
@@ -88,8 +88,7 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 		}
 	}
 	else {
-		srand(time(NULL));
-		
+		srand(time(NULL));		
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
 			for (int y = 0; y < WORLD_HEIGHT; y++)

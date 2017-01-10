@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <map>
 
 #include <GL\glew.h>
 

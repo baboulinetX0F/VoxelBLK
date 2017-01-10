@@ -215,3 +215,10 @@ ModelManifest.xml
 /VoxelBLK/#default.vert#
 /VoxelBLK.VC.VC.opendb
 /VoxelBLK.VC.db
+/VoxelBLK/textures/skybox/top.jpg
+/VoxelBLK/textures/skybox/right.jpg
+/VoxelBLK/textures/skybox/left.jpg
+/VoxelBLK/textures/skybox/front.jpg
+/VoxelBLK/textures/skybox/bottom.jpg
+/VoxelBLK/textures/skybox/back.jpg
+/VoxelBLK/textures/skybox

@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Skybox.h"
 
 enum RenderMode
 {
@@ -62,7 +63,8 @@ class Renderer
 	glm::mat4 _projection;
 
 	Shader* _defaultShader;
-	GLuint _occlusionQuery;
+	CSkybox* _skybox;
+	GLuint _occlusionQuery;	
 		
 	// Debug Informations
 	double _lastTime;
@@ -73,8 +75,9 @@ class Renderer
 	RenderMode _dRenderMode = RenderMode::RENDER_FILL;
 	GLfloat _pRenderingDistance = 100.0f;
 	bool _pRenderOcclusionPrimitive = false;
-	bool _pEnableOcclusionQueryCulling = false;	
-
+	bool _pEnableOcclusionQueryCulling = false;
+	bool _pDrawSkybox = true;
+	
 	void printDebugInfos();
 	void calculateFrameTime();	
 	

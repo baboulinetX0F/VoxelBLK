@@ -69,12 +69,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)deps\libnoise\include;$(SolutionDir)IMGui;$(SolutionDir)deps\freetype\include;$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)IMGui\Debug;$(SolutionDir)deps\libnoise\lib;$(SolutionDir)deps\freetype\lib;$(SolutionDir)deps\glfw\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)deps\libnoise\include;$(SolutionDir)IMGui;$(SolutionDir)deps\freetype\include;$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\soil\src;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps\soil\lib;$(SolutionDir)deps\glfw\lib;$(SolutionDir)IMGui\Debug;$(SolutionDir)deps\libnoise\lib;$(SolutionDir)deps\freetype\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)deps\libnoise\include;$(SolutionDir)IMGui;$(SolutionDir)deps\freetype\include;$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)IMGui\Debug;$(SolutionDir)deps\libnoise\lib;$(SolutionDir)deps\freetype\lib;$(SolutionDir)deps\glfw\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)deps\libnoise\include;$(SolutionDir)IMGui;$(SolutionDir)deps\freetype\include;$(SolutionDir)deps\glm;$(SolutionDir)deps\glew\include;$(SolutionDir)deps\soil\src;$(SolutionDir)deps\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps\soil\lib;$(SolutionDir)deps\glfw\lib;$(SolutionDir)IMGui\Debug;$(SolutionDir)deps\libnoise\lib;$(SolutionDir)deps\freetype\lib;$(SolutionDir)deps\glew\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,7 +84,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libnoise.lib;IMGui.lib;freetype27d.lib;opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SOIL.lib;libnoise.lib;IMGui.lib;freetype27d.lib;opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libnoise.lib;IMGui.lib;freetype27d.lib;opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SOIL.lib;libnoise.lib;IMGui.lib;freetype27d.lib;opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,6 +131,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
+    <ClCompile Include="CubemapTexture.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SimplexNoise.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +148,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
+    <ClInclude Include="CubemapTexture.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="ManagedVBO.h" />
@@ -153,6 +156,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SimplexNoise.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -51,6 +51,9 @@ void Renderer::initWindow(const char * title, int width, int height)
 
 	glEnable(GL_DEPTH_TEST);
 	glGenQueries(1, &_occlusionQuery);	
+
+	_skybox = new CSkybox();
+	_skybox->Load();
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -79,6 +82,8 @@ void Renderer::beginFrame()
 
 void Renderer::endFrame()
 {
+	if (_pDrawSkybox)
+		_skybox->Draw(glm::mat4(glm::mat3(_camera->getViewMatrix())), _projection);
 	glfwSwapBuffers(_window);
 }
 

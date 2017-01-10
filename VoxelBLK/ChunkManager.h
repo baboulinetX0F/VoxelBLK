@@ -4,8 +4,8 @@
 #include "Renderer.h"
 #include "SimplexNoise.h"
 
-const int CHUNKS_NUMBER_X = 10;
-const int CHUNKS_NUMBER_Y = 10;
+const int CHUNKS_NUMBER_X = 5;
+const int CHUNKS_NUMBER_Y = 5;
 
 class ChunkManager
 {

@@ -49,8 +49,7 @@ void ChunkManager::Update(Renderer* renderer)
 		for (int x = 0; x < CHUNKS_NUMBER_X; x++)  
 		{
 			if (IsChunkVisible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
-			{
-				//_chunks[x][y]->loadChunk(renderer);
+			{				
 				_chunks[x][y]->exp_loadChunk(this, renderer);
 				std::cout << "Loading Chunk...\n";
 			}			

@@ -6,7 +6,6 @@ ManagedVBO::ManagedVBO(GLuint VAO, unsigned int blockSize, unsigned int blockCou
 	_VAO = VAO;
 	_blockSize = blockSize;
 	_bufferSize = blockSize * blockCount;
-	_currentMax = 0;
 	
 	glBindVertexArray(_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
@@ -34,11 +33,6 @@ GLuint ManagedVBO::GetVBO()
 	return _VBO;
 }
 
-const unsigned int ManagedVBO::GetCurrentMax()
-{
-	return _currentMax;
-}
-
 const unsigned int ManagedVBO::GetBlockSize()
 {
 	return _blockSize;
@@ -62,14 +56,11 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 			glEnableVertexAttribArray(attrib[1].index);
 			
 		}
-		if (_blocksAvailable.top() * _blockSize > _currentMax)
-			_currentMax = _blocksAvailable.top() * _blockSize;				
-		
-		_blocks[_blocksAvailable.top()] = size;
-
-		_blocksAvailable.pop();
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+
+		_blocks[_blocksAvailable.top()] = size;
+		_blocksAvailable.pop();
 		return 0;
 	}
 	else

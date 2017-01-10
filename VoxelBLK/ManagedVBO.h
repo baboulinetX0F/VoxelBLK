@@ -6,7 +6,6 @@
 
 #include <stack>
 #include <vector>
-#include <tuple>
 #include <map>
 #include <iostream>
 
@@ -33,7 +32,6 @@ public:
 
 	GLuint GetVAO();
 	GLuint GetVBO();
-	const unsigned int GetCurrentMax();
 	const unsigned int GetBlockSize();
 
 	unsigned int LoadData(GLfloat* data, VertexAttrib* attrib, unsigned int size);
@@ -45,9 +43,6 @@ public:
 private:
 	GLuint _VBO, _VAO;
 	unsigned int _blockSize;
-	unsigned int _bufferSize;
-	unsigned int _currentMax;
+	unsigned int _bufferSize;	
 	std::stack<int> _blocksAvailable;
-
-	
 };

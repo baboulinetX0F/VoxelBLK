@@ -54,6 +54,9 @@ void Renderer::initWindow(const char * title, int width, int height)
 
 	_skybox = new CSkybox();
 	_skybox->Load();
+
+	glGenTextures(1, &_textureAtlas);
+	loadTextureAtlas();
 }
 
 GLFWwindow * Renderer::getWindow()
@@ -290,6 +293,48 @@ void Renderer::calculateFrameTime()
 		_nbFrames = 0;
 		_lastTime += 1.0;
 	}
+}
+
+// TODO : Move into a new class
+void Renderer::loadTextureAtlas()
+{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, _textureAtlas);
+
+	//Create storage for the texture
+	glTexStorage3D(GL_TEXTURE_2D_ARRAY,
+		1,                    //No mipmaps as textures are 1x1
+		GL_RGB,              //Internal format
+		1024, 1024,         //width,height
+		2                   //Number of layers
+	);
+
+	char* files[] =
+	{
+		"textures/grass.jpg",
+		"textures/dirt.jpg"
+	};
+
+	unsigned char* image;
+	int width, height;
+
+	for (int i = 0; i < 2; i++)
+	{
+		image = SOIL_load_image(files[i], &width, &height, 0, SOIL_LOAD_RGB);
+		//Specify i-essim image
+		glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
+			0,                     //Mipmap number
+			0, 0, i,               //xoffset, yoffset, zoffset
+			1, 1, 1,               //width, height, depth
+			GL_RGB,                //format
+			GL_UNSIGNED_BYTE,      //type
+			image);                //pointer to data
+	}
+
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
 GLfloat Renderer::GetRenderingDistance()

@@ -64,7 +64,8 @@ class Renderer
 
 	Shader* _defaultShader;
 	CSkybox* _skybox;
-	GLuint _occlusionQuery;	
+	GLuint _occlusionQuery;
+	GLuint _textureAtlas;
 		
 	// Debug Informations
 	double _lastTime;
@@ -79,7 +80,9 @@ class Renderer
 	bool _pDrawSkybox = true;
 	
 	void printDebugInfos();
-	void calculateFrameTime();	
+	void calculateFrameTime();
+
+	void loadTextureAtlas();
 	
 	bool occlusionTest(Mesh* mesh);
 };

@@ -508,10 +508,10 @@ void Chunk::experimental_genMesh()
 
 	// tmp
 	GLfloat textureIndex = 0.0f;
-	glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f);
+	/*glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f);
 	glm::vec2 texCoordsRightTop = glm::vec2(1.0f, 0.0f);
 	glm::vec2 texCoordsLeftBottom = glm::vec2(0.0f, 0.0f);
-	glm::vec2 texCoordsRightBottom = glm::vec2(1.0f, 1.0f);
+	glm::vec2 texCoordsRightBottom = glm::vec2(1.0f, 1.0f);*/
 
 	// Transform quads into triangles-based quads and send vertices to the mesh object
 	BlockFaces nearBlocks = BlockFaces{ true,true,true,true,true,true };
@@ -535,6 +535,11 @@ void Chunk::experimental_genMesh()
 			if (!front && !back)
 				break;
 		}
+
+		glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f * quads[i].h);
+		glm::vec2 texCoordsRightTop = glm::vec2(1.0f * quads[i].w, 0.0f);
+		glm::vec2 texCoordsLeftBottom = glm::vec2(0.0f, 0.0f);
+		glm::vec2 texCoordsRightBottom = glm::vec2(1.0f * quads[i].w, 1.0f * quads[i].h);
 		
 		// Front face
 		if (!back) {
@@ -580,6 +585,11 @@ void Chunk::experimental_genMesh()
 				break;
 		}
 		
+		glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f * z_quads[i].h);
+		glm::vec2 texCoordsRightTop = glm::vec2(1.0f * z_quads[i].w, 0.0f);
+		glm::vec2 texCoordsLeftBottom = glm::vec2(0.0f, 0.0f);
+		glm::vec2 texCoordsRightBottom = glm::vec2(1.0f * z_quads[i].w, 1.0f * z_quads[i].h);
+
 		// Left Face
 		if (!left) {
 			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightTop, textureIndex));
@@ -606,6 +616,11 @@ void Chunk::experimental_genMesh()
 	// TODO : Add neighboors face culling for bottom/top faces
 	for (unsigned int i = 0; i < y_quads.size(); i++)
 	{
+		glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f * y_quads[i].h);
+		glm::vec2 texCoordsRightTop = glm::vec2(1.0f * y_quads[i].w, 0.0f);
+		glm::vec2 texCoordsLeftBottom = glm::vec2(0.0f, 0.0f);
+		glm::vec2 texCoordsRightBottom = glm::vec2(1.0f * y_quads[i].w, 1.0f * y_quads[i].h);
+
 		//Bottom face
 		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftTop, textureIndex));
 		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftBottom, textureIndex));
@@ -629,7 +644,7 @@ void Chunk::experimental_genMesh()
 	{		
 		_vertices[i].position.x += _position.x * CHUNK_SIZE;
 		_vertices[i].position.z += _position.y * CHUNK_SIZE;
-	}
+	}	
 }
 
 bool Chunk::block_visible(int x, int y, int z)

@@ -3,12 +3,10 @@
 layout (binding=0) uniform sampler2DArray textureArray;
 
 in vec2 f_texCoords;
-in flat int f_texIndex;
-in vec3 f_pos;
-
+in float f_texIndex;
 out vec4 color;
 
 void main()
 {  
-  color = texture(textureArray, vec3(f_texCoords.x,f_texCoords.y, 0));
+  color = texture(textureArray, vec3(f_texCoords.x,f_texCoords.y, f_texIndex));
 }

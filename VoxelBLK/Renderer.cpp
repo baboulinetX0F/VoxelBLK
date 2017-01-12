@@ -133,6 +133,8 @@ void Renderer::Render(ManagedVBO* vbo, unsigned int vtxcount)
 		GL_FALSE, glm::value_ptr(model));
 
 	glBindVertexArray(vbo->GetVAO());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, _textureAtlas);
 
 	for (std::map<int, unsigned int>::iterator ite = vbo->_blocks.begin();
 		ite != vbo->_blocks.end(); ite++)
@@ -267,7 +269,7 @@ Camera * Renderer::getCamera()
 
 void Renderer::initDefaultShader()
 {
-	_defaultShader = new Shader("shaders/default_camera.vert", "shaders/default.frag");
+	_defaultShader = new Shader("shaders/default_textured.vert", "shaders/default_textured.frag");
 }
 
 const int Renderer::getVerticesRendered()
@@ -303,14 +305,15 @@ void Renderer::loadTextureAtlas()
 
 	//Create storage for the texture
 	glTexStorage3D(GL_TEXTURE_2D_ARRAY,
-		1,                    //No mipmaps as textures are 1x1
-		GL_RGB,              //Internal format
+		3,                    //No mipmaps as textures are 1x1
+		GL_RGBA8,              //Internal format
 		1024, 1024,         //width,height
-		2                   //Number of layers
+		3                  //Number of layers
 	);
 
-	char* files[] =
+	const char* files[] =
 	{
+		"textures/placeholder_1024.png",
 		"textures/grass.jpg",
 		"textures/dirt.jpg"
 	};
@@ -318,23 +321,24 @@ void Renderer::loadTextureAtlas()
 	unsigned char* image;
 	int width, height;
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		image = SOIL_load_image(files[i], &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(files[i], &width, &height, 0, SOIL_LOAD_RGBA);
 		//Specify i-essim image
 		glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
 			0,                     //Mipmap number
 			0, 0, i,               //xoffset, yoffset, zoffset
-			1, 1, 1,               //width, height, depth
-			GL_RGB,                //format
+			1024, 1024, 1,               //width, height, depth
+			GL_RGBA,                //format
 			GL_UNSIGNED_BYTE,      //type
 			image);                //pointer to data
 	}
 
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 }
 
 GLfloat Renderer::GetRenderingDistance()

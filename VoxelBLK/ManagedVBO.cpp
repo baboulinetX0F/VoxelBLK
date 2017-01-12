@@ -54,6 +54,9 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 			glVertexAttribPointer(attrib[1].index, attrib[1].size, attrib[1].type, attrib[1].normalized,
 				attrib[1].stride, attrib[1].pointer);
 			glEnableVertexAttribArray(attrib[1].index);
+			glVertexAttribPointer(attrib[2].index, attrib[2].size, attrib[2].type, attrib[2].normalized,
+				attrib[2].stride, attrib[2].pointer);
+			glEnableVertexAttribArray(attrib[2].index);
 			
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

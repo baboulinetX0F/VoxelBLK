@@ -25,12 +25,12 @@ void Mesh::addVertex(Vertex v)
 
 void Mesh::addVertex(glm::vec3 pos)
 {
-	_vertices.push_back(Vertex{ pos, MESH_DEFAULT_COLOR });
+	//_vertices.push_back(Vertex{ pos, MESH_DEFAULT_COLOR });
 }
 
 void Mesh::addVertex(glm::vec3 pos, glm::vec4 color)
 {
-	_vertices.push_back(Vertex{ pos, color });
+	//_vertices.push_back(Vertex{ pos, color });
 }
 
 const std::vector<Vertex> Mesh::getVertices()
@@ -61,10 +61,9 @@ GLfloat * Mesh::verticesToArray()
 		output[(i* VERTEX_COMPONENT_COUNT)] = _vertices.at(i).position.x;
 		output[(i*VERTEX_COMPONENT_COUNT) + 1] = _vertices.at(i).position.y;
 		output[(i*VERTEX_COMPONENT_COUNT) + 2] = _vertices.at(i).position.z;
-		output[(i* VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).color.r;
-		output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).color.g;
-		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).color.b;
-		output[(i*VERTEX_COMPONENT_COUNT) + 6] = _vertices.at(i).color.a;
+		output[(i*VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).texCoords.x;
+		output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).texCoords.y;
+		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).texIndex;
 	}
 	return output;
 }

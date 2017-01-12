@@ -138,10 +138,13 @@ GLfloat * Chunk::GetVerticesData()
 		output[(i* VERTEX_COMPONENT_COUNT)] = _vertices.at(i).position.x;
 		output[(i*VERTEX_COMPONENT_COUNT) + 1] = _vertices.at(i).position.y;
 		output[(i*VERTEX_COMPONENT_COUNT) + 2] = _vertices.at(i).position.z;
-		output[(i* VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).color.r;
-		output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).color.g;
-		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).color.b;
-		output[(i*VERTEX_COMPONENT_COUNT) + 6] = _vertices.at(i).color.a;
+		output[(i*VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).texCoords.x;
+		output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).texCoords.y;
+		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).texIndex;
+		//output[(i* VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).color.r;
+		//output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).color.g;
+		//output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).color.b;
+		//output[(i*VERTEX_COMPONENT_COUNT) + 6] = _vertices.at(i).color.a;
 	}
 	return output;
 }
@@ -503,6 +506,13 @@ void Chunk::experimental_genMesh()
 
 	color = MESH_DEFAULT_COLOR;
 
+	// tmp
+	GLfloat textureIndex = 0.0f;
+	glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f);
+	glm::vec2 texCoordsRightTop = glm::vec2(1.0f, 0.0f);
+	glm::vec2 texCoordsLeftBottom = glm::vec2(0.0f, 0.0f);
+	glm::vec2 texCoordsRightBottom = glm::vec2(1.0f, 1.0f);
+
 	// Transform quads into triangles-based quads and send vertices to the mesh object
 	BlockFaces nearBlocks = BlockFaces{ true,true,true,true,true,true };
 	for (unsigned int i = 0; i < quads.size(); i++)
@@ -528,22 +538,22 @@ void Chunk::experimental_genMesh()
 		
 		// Front face
 		if (!back) {
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), texCoordsRightTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, -0.5f + quads[i].z), texCoordsRightBottom, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), texCoordsRightTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, -0.5f + quads[i].z), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, -0.5f + quads[i].z), texCoordsLeftBottom, textureIndex));
 		}
 
 		// Back face
 		if (!front) {
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), texCoordsRightTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), -0.5f + quads[i].y, 0.5f + quads[i].z), texCoordsRightBottom, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + quads[i].x + (quads[i].w - 1), 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), texCoordsRightTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, -0.5f + quads[i].y, 0.5f + quads[i].z), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + quads[i].x, 0.5f + (quads[i].h - 1) + quads[i].y, 0.5f + quads[i].z), texCoordsLeftBottom, textureIndex));
 		}
 	}
 	
@@ -572,22 +582,22 @@ void Chunk::experimental_genMesh()
 		
 		// Left Face
 		if (!left) {
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), texCoordsLeftBottom, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightBottom, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(-0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightTop, textureIndex));
 		}
 
 		// Right Face
 		if (!right) {
-			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
-			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), color));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), -0.5f + z_quads[i].x), texCoordsLeftBottom, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, -0.5f + z_quads[i].x), texCoordsLeftTop, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, -0.5f + z_quads[i].y, 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightBottom, textureIndex));
+			_vertices.push_back(Vertex(glm::vec3(0.5f + z_quads[i].z, 0.5f + z_quads[i].y + (z_quads[i].h - 1), 0.5f + (z_quads[i].w - 1) + z_quads[i].x), texCoordsRightTop, textureIndex));
 		}
 	}
 
@@ -597,20 +607,20 @@ void Chunk::experimental_genMesh()
 	for (unsigned int i = 0; i < y_quads.size(); i++)
 	{
 		//Bottom face
-		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
-		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
-		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
-		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
-		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
-		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftTop, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftBottom, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), texCoordsRightTop, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), texCoordsRightTop, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), texCoordsRightBottom, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, -0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftTop, textureIndex));
 
 		//Top face
-		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
-		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
-		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
-		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
-		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), color));
-		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), color));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftTop, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftBottom, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), texCoordsRightTop, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(0.5f + y_quads[i].y + (y_quads[i].h - 1), 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), texCoordsRightTop, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, 0.5f + y_quads[i].x + (y_quads[i].w - 1)), texCoordsRightBottom, textureIndex));
+		_vertices.push_back(Vertex(glm::vec3(-0.5f + y_quads[i].y, 0.5f + y_quads[i].z, -0.5f + y_quads[i].x), texCoordsLeftTop, textureIndex));
 
 	}
 

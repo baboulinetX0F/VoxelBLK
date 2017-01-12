@@ -37,6 +37,7 @@ class Renderer
 
 	// A rename
 	void Render(ManagedVBO* vbo, unsigned int vtxcount);
+	void RenderSkybox();
 
 	// Methods related to mesh
 	void LoadMesh(Mesh* mesh);

@@ -29,14 +29,13 @@ void Game::Initialize()
 	Input::initInput(_renderer);
 	_uiManager->Initialize(_renderer);
 	_chunkManager = new ChunkManager(_renderer);
-	_chunkManager->GenerateChunks(GEN_PERLIN);
+	_chunkManager->GenerateChunks(GEN_RANDOM);
 	//_renderer->setRenderMode(RenderMode::RENDER_WIREFRAME);
 }
 
 void Game::gameLoop()
 {
-	/* Test Mesh View Frustum
-	Mesh* frustum = new Mesh();
+	/* Test Mesh View Frustum	
 	GLfloat farDist = 50.0f;
 	GLfloat nearDist = 1.0f;
 	GLfloat ratio = static_cast<GLfloat>(1280 / 720);
@@ -61,38 +60,7 @@ void Game::gameLoop()
 	glm::vec3 ntl = nc + (up * (Hnear / 2)) - (right * (Wnear / 2));
 	glm::vec3 ntr = nc + (up * (Hnear / 2)) + (right * (Wnear / 2));
 	glm::vec3 nbl = nc - (up * (Hnear / 2)) - (right * (Wnear / 2));
-	glm::vec3 nbr = nc - (up * (Hnear / 2)) + (right * (Wnear / 2));
-
-	glm::vec4 color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	frustum->addVertex(ftl,color);
-	frustum->addVertex(ftr, color));
-	frustum->addVertex(fbl, color));
-	frustum->addVertex(fbl, color));
-	frustum->addVertex(fbr, color));
-	frustum->addVertex(ftr,color);
-
-	frustum->addVertex(ntl, color));
-	frustum->addVertex(ntr, color));
-	frustum->addVertex(nbl, color));
-	frustum->addVertex(nbl, color));
-	frustum->addVertex(nbr, color));
-	frustum->addVertex(ntr, color));
-
-	frustum->addVertex(ntl, color));
-	frustum->addVertex(ftl, color));
-	frustum->addVertex(ftr, color));
-	frustum->addVertex(ftr, color));
-	frustum->addVertex(ntr, color));
-	frustum->addVertex(ntl, color));
-
-	frustum->addVertex(nbl, color));
-	frustum->addVertex(fbl, color));
-	frustum->addVertex(fbr, color));
-	frustum->addVertex(fbr, color));
-	frustum->addVertex(nbr, color));
-	frustum->addVertex(nbl, color));
-
-	_renderer->LoadMesh(frustum);
+	glm::vec3 nbr = nc - (up * (Hnear / 2)) + (right * (Wnear / 2));	
 	*/		
 	
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
@@ -100,7 +68,8 @@ void Game::gameLoop()
 		_renderer->beginFrame();
 		_uiManager->NewFrame();
 		_chunkManager->Update(_renderer);
-		_chunkManager->Render(_renderer);		
+		_chunkManager->Render(_renderer);
+		_renderer->RenderSkybox();
 		_uiManager->Render();
 		_renderer->endFrame();
 	}	

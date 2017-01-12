@@ -84,9 +84,7 @@ void Renderer::beginFrame()
 }
 
 void Renderer::endFrame()
-{
-	if (_pDrawSkybox)
-		_skybox->Draw(glm::mat4(glm::mat3(_camera->getViewMatrix())), _projection);
+{	
 	glfwSwapBuffers(_window);
 }
 
@@ -146,6 +144,12 @@ void Renderer::Render(ManagedVBO* vbo, unsigned int vtxcount)
 	}
 
 	glBindVertexArray(0);
+}
+
+void Renderer::RenderSkybox()
+{
+	if (_pDrawSkybox)
+		_skybox->Draw(glm::mat4(glm::mat3(_camera->getViewMatrix())), _projection);
 }
 
 void Renderer::LoadMesh(Mesh * mesh)

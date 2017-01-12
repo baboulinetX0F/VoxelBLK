@@ -30,8 +30,7 @@ bool Chunk::isEmpty()
 }
 
 void Chunk::loadChunk(Renderer* renderer)
-{
-	//generateMesh();
+{	
 	experimental_genMesh();	
 	renderer->LoadMesh(_mesh);
 	_loaded = true;
@@ -141,10 +140,6 @@ GLfloat * Chunk::GetVerticesData()
 		output[(i*VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).texCoords.x;
 		output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).texCoords.y;
 		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).texIndex;
-		//output[(i* VERTEX_COMPONENT_COUNT) + 3] = _vertices.at(i).color.r;
-		//output[(i*VERTEX_COMPONENT_COUNT) + 4] = _vertices.at(i).color.g;
-		//output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).color.b;
-		//output[(i*VERTEX_COMPONENT_COUNT) + 6] = _vertices.at(i).color.a;
 	}
 	return output;
 }
@@ -256,27 +251,7 @@ void Chunk::experimental_genMesh()
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{				
 				if (_blocks[x][y][z].isActive() && block_visible(x,y,z)) {					
-					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);					
-					
-					//Bottom face
-					/*if (!nearbyFaces.down) {
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-					}
-
-					// Top face
-					if (!nearbyFaces.top) {
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
-					_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-					_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-					_vertices.push_back(Vertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					}*/						
+					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);	
 				
 					if (!x_seg)
 					{
@@ -428,13 +403,7 @@ void Chunk::experimental_genMesh()
 				currentQuad = nullptr;
 			}
 		}
-	}
-
-	/* Debug Quads count Display
-	std::cout << "XQuads Count pre-merge : " << quads.size() << std::endl; 
-	std::cout << "ZQuads Count pre-merge : " << z_quads.size() << std::endl; 
-	std::cout << "YQuads Count pre-merge : " << y_quads.size() << std::endl;
-	*/
+	}	
 
 	// TODO : Rewrite merge algorithm (to test all merges possible)
 	// Merge all quads (top-down/left-right/front-back)
@@ -493,25 +462,9 @@ void Chunk::experimental_genMesh()
 		}
 	}
 
-	/* Debug Quads count post-merge Display
-	std::cout << "XQuads Count post-merge : " << quads.size() << std::endl;
-	std::cout << "ZQuads Count post-merge : " << z_quads.size() << std::endl; 
-	std::cout << "YQuads Count post-merge : " << y_quads.size() << std::endl; 		
-	
-	/*for (unsigned int i = 0; i < quads.size(); i++)
-	{
-		std::cout << "Quad " << i << " : x: " << quads[i].x << " y: " << quads[i].y << " z: " 
-			<< quads[i].z  << " w: " << quads[i].w << " h: " << quads[i].h << std::endl;
-	}*/
-
 	color = MESH_DEFAULT_COLOR;
-
-	// tmp
-	GLfloat textureIndex = 0.0f;
-	/*glm::vec2 texCoordsLeftTop = glm::vec2(0.0f, 1.0f);
-	glm::vec2 texCoordsRightTop = glm::vec2(1.0f, 0.0f);
-	glm::vec2 texCoordsLeftBottom = glm::vec2(0.0f, 0.0f);
-	glm::vec2 texCoordsRightBottom = glm::vec2(1.0f, 1.0f);*/
+	
+	GLfloat textureIndex = 0.0f;	
 
 	// Transform quads into triangles-based quads and send vertices to the mesh object
 	BlockFaces nearBlocks = BlockFaces{ true,true,true,true,true,true };

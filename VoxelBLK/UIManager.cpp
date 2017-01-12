@@ -31,6 +31,8 @@ void UIManager::Render()
 	ImGui::Text("Frametime avg. %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
 		ImGui::GetIO().Framerate);
 	ImGui::Text("Vertices count : %d ", _renderer->getVerticesRendered());
+	ImGui::Text("Camera Pos : %f , %f , %f", _renderer->getCamera()->_pos.x,
+		_renderer->getCamera()->_pos.y, _renderer->getCamera()->_pos.z);
 
 	// Keep Fill mode for UI on Wireframe render
 	RenderMode tmp = _renderer->getRenderMode();

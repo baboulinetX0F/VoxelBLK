@@ -152,94 +152,6 @@ void Renderer::RenderSkybox()
 		_skybox->Draw(glm::mat4(glm::mat3(_camera->getViewMatrix())), _projection);
 }
 
-void Renderer::LoadMesh(Mesh * mesh)
-{	
-	GLfloat* data = mesh->verticesToArray();
-	glBindVertexArray(mesh->getVAO());
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->getVBO());
-	glBufferData(GL_ARRAY_BUFFER, mesh->getVertices().size() *(VERTEX_COMPONENT_COUNT * sizeof(GLfloat)), data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)(3*sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	// Load mesh's occlusion primitive for culling
-	mesh->generateOcclusionPrimitve();	
-	data = mesh->getOcclusionPrimitive()->verticesToArray();
-	glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->getOcclusionPrimitive()->getVBO());
-	glBufferData(GL_ARRAY_BUFFER, mesh->getOcclusionPrimitive()->getVertices().size() *(VERTEX_COMPONENT_COUNT * sizeof(GLfloat)), data, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, VERTEX_COMPONENT_COUNT * sizeof(GLfloat), (GLvoid*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-void Renderer::UnloadMesh(Mesh * mesh)
-{
-	// TODO : Implement UnloadMesh
-}
-
-void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model, Shader * shader)
-{
-	if (mesh->getVertices().size() > 0) {
-		shader->Use();
-		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "view"), 1, GL_FALSE, glm::value_ptr(_camera->getViewMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "projection"), 1, GL_FALSE, glm::value_ptr(_projection));
-		glUniformMatrix4fv(glGetUniformLocation(_defaultShader->_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		if (_pEnableOcclusionQueryCulling)
-		{			
-			if (occlusionTest(mesh))
-			{
-				glColorMask(true, true, true, true);
-				glDepthMask(GL_TRUE);
-				if (_pRenderOcclusionPrimitive)
-				{
-					glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
-					glDrawArrays(GL_TRIANGLES, 0, mesh->getOcclusionPrimitive()->getVertices().size());
-					_dVerticesRendered += mesh->getOcclusionPrimitive()->getVertices().size();
-					glBindVertexArray(0);
-				}
-				else
-				{
-					glBindVertexArray(mesh->getVAO());
-					glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
-					_dVerticesRendered += mesh->getVertices().size();
-					glBindVertexArray(0);
-				}
-			}
-			else
-			{
-				glColorMask(true, true, true, true);
-				glDepthMask(GL_TRUE);
-			}
-		}
-		else
-		{
-			glBindVertexArray(mesh->getVAO());
-			glDrawArrays(GL_TRIANGLES, 0, mesh->getVertices().size());
-			_dVerticesRendered += mesh->getVertices().size();
-			glBindVertexArray(0);
-		}
-	}
-}
-
-void Renderer::RenderMesh(Mesh * mesh)
-{
-	glm::mat4 model = glm::mat4();
-	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-	RenderMesh(mesh, model, _defaultShader);
-}
-
-void Renderer::RenderMesh(Mesh * mesh, glm::mat4 model)
-{	
-	RenderMesh(mesh, model, _defaultShader);
-}
-
 void Renderer::setRenderMode(RenderMode mode)
 {
 	_dRenderMode = mode;
@@ -254,7 +166,7 @@ void Renderer::setRenderMode(RenderMode mode)
 	}
 }
 
-const RenderMode Renderer::getRenderMode()
+RenderMode Renderer::getRenderMode() const
 {
 	return _dRenderMode;
 }
@@ -266,7 +178,7 @@ void Renderer::initCamera()
 		0.1f, _pRenderingDistance);
 }
 
-Camera * Renderer::getCamera()
+Camera * Renderer::getCamera() const
 {
 	return _camera;
 }
@@ -276,7 +188,7 @@ void Renderer::initDefaultShader()
 	_defaultShader = new Shader("shaders/default_textured.vert", "shaders/default_textured.frag");
 }
 
-const int Renderer::getVerticesRendered()
+int Renderer::getVerticesRendered() const
 {
 	return _dVerticesRendered;
 }
@@ -345,26 +257,7 @@ void Renderer::loadTextureAtlas()
 	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 }
 
-GLfloat Renderer::GetRenderingDistance()
+GLfloat Renderer::GetRenderingDistance() const
 {
 	return _pRenderingDistance;
-}
-
-bool Renderer::occlusionTest(Mesh * mesh)
-{	
-	glColorMask(false, false, false, false);
-	glDepthMask(GL_FALSE);
-	glBindVertexArray(mesh->getOcclusionPrimitive()->getVAO());
-	// Begin occlusion query
-	glBeginQuery(GL_SAMPLES_PASSED, _occlusionQuery);
-		glDrawArrays(GL_TRIANGLES, 0, mesh->getOcclusionPrimitive()->getVertices().size());
-	glEndQuery(GL_SAMPLES_PASSED);
-	// Now get the number of pixels passed
-	int iSamplesPassed = 0;
-	glGetQueryObjectiv(_occlusionQuery, GL_QUERY_RESULT, &iSamplesPassed);		
-	glBindVertexArray(0);
-	if (iSamplesPassed > 0)
-		return true;
-	else
-		return false;	
 }

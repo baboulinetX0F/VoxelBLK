@@ -51,7 +51,7 @@ void CubemapTexture::Bind()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, _texObject);
 }
 
-const GLuint CubemapTexture::GetTextureObject()
+GLuint CubemapTexture::GetTextureObject() const
 {
 	return _texObject;
 }

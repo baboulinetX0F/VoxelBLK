@@ -17,7 +17,7 @@ bool Block::isActive()
 	return _active;
 }
 
-BlockType Block::getType()
+BlockType Block::getType() const
 {
 	return _type;
 }

@@ -5,7 +5,7 @@
 #include <GLFW\glfw3.h>
 
 #include "Shader.h"
-#include "Mesh.h"
+#include "Vertex.h"
 #include "Camera.h"
 #include "Skybox.h"
 
@@ -37,25 +37,18 @@ class Renderer
 
 	// A rename
 	void Render(ManagedVBO* vbo, unsigned int vtxcount);
-	void RenderSkybox();
-
-	// Methods related to mesh
-	void LoadMesh(Mesh* mesh);
-	void UnloadMesh(Mesh* mesh);
-	void RenderMesh(Mesh* mesh, glm::mat4 model, Shader* shader);
-	void RenderMesh(Mesh* mesh);	
-	void RenderMesh(Mesh* mesh, glm::mat4 model);
+	void RenderSkybox();	
 
 	void setRenderMode(RenderMode mode);
-	const RenderMode getRenderMode();
+	RenderMode getRenderMode() const;
 
 	void initCamera();
-	Camera* getCamera();
+	Camera* getCamera() const;
 
 	void initDefaultShader();
 
-	const int getVerticesRendered();
-	GLfloat GetRenderingDistance();
+	int getVerticesRendered() const;
+	GLfloat GetRenderingDistance() const;
 
  private:
 	GLFWwindow* _window;
@@ -84,6 +77,4 @@ class Renderer
 	void calculateFrameTime();
 
 	void loadTextureAtlas();
-	
-	bool occlusionTest(Mesh* mesh);
 };

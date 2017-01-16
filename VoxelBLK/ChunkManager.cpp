@@ -48,32 +48,21 @@ void ChunkManager::Update(Renderer* renderer)
 	{
 		for (int x = 0; x < CHUNKS_NUMBER_X; x++)  
 		{
-			if (IsChunkVisible(x,y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
-			{				
-				_chunks[x][y]->exp_loadChunk(this, renderer);
+			if (IsChunkVisible(x, y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
+			{
 				std::cout << "Loading Chunk...\n";
-			}			
+				_chunks[x][y]->loadChunk(this, renderer);				
+			}
 			else if (!IsChunkVisible(x, y))
 			{
-				_chunks[x][y]->unloadChunk(renderer);
-			}		
+					_chunks[x][y]->unloadChunk(renderer);
+			}			
 		}
 	}
 }
 
 void ChunkManager::Render(Renderer * renderer)
 {
-	/*
-	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
-	{
-		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
-		{
-			glm::mat4 model = glm::mat4();
-			model = glm::translate(model, glm::vec3(x*CHUNK_SIZE, 0.0f, y*CHUNK_SIZE));
-			_chunks[x][y]->renderChunk(renderer, model);
-		}
-	}*/
-
 	unsigned int vtxCount = 0;
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{

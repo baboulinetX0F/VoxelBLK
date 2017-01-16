@@ -24,7 +24,7 @@ public:
 	~Block();
 
 	bool isActive();	
-	BlockType getType();
+	BlockType getType() const;
 
 	void setActive(bool state);
 

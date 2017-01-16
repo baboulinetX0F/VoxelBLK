@@ -16,7 +16,7 @@ public:
 	bool Load();
 	void Bind();
 
-	const GLuint GetTextureObject();
+	GLuint GetTextureObject() const;
 
 private:
 	GLuint _texObject;

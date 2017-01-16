@@ -6,12 +6,11 @@
 
 Chunk::Chunk()
 {
-	_mesh = new Mesh();
+	
 }
 
 Chunk::Chunk(glm::vec2 pos)
-{
-	_mesh = new Mesh();
+{	
 	_position = pos;
 }
 
@@ -29,16 +28,9 @@ bool Chunk::isEmpty()
 	return _empty;
 }
 
-void Chunk::loadChunk(Renderer* renderer)
-{	
-	experimental_genMesh();	
-	renderer->LoadMesh(_mesh);
-	_loaded = true;
-}
-
-void Chunk::exp_loadChunk(ChunkManager * manager, Renderer* renderer)
+void Chunk::loadChunk(ChunkManager * manager, Renderer* renderer)
 {
-	experimental_genMesh();
+	experimental_genMesh();	
 	if (renderer->LoadToManagedVBO(manager->getVBO(), GetVerticesData(), VERTEX_DEFAULT_ATTRIBS,
 		_vertices.size() * VERTEX_COMPONENT_COUNT * sizeof(GLfloat)) != -1)
 	{
@@ -51,19 +43,8 @@ void Chunk::exp_loadChunk(ChunkManager * manager, Renderer* renderer)
 
 void Chunk::unloadChunk(Renderer * renderer)
 {
-	renderer->UnloadMesh(_mesh);
-	_loaded = false;
 }
 
-void Chunk::renderChunk(Renderer * renderer)
-{
-	renderer->RenderMesh(_mesh);
-}
-
-void Chunk::renderChunk(Renderer * renderer, glm::mat4 model)
-{
-	renderer->RenderMesh(_mesh,model);
-}
 
 void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 {
@@ -124,12 +105,12 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 	}
 }
 
-unsigned int Chunk::GetVerticesCount()
+unsigned int Chunk::GetVerticesCount() const
 {
 	return _vertices.size();
 }
 
-GLfloat * Chunk::GetVerticesData()
+GLfloat * Chunk::GetVerticesData() const
 {
 	GLfloat* output = new GLfloat[_vertices.size() * VERTEX_COMPONENT_COUNT];
 	for (unsigned int i = 0; i < _vertices.size(); i++)
@@ -142,87 +123,6 @@ GLfloat * Chunk::GetVerticesData()
 		output[(i*VERTEX_COMPONENT_COUNT) + 5] = _vertices.at(i).texIndex;
 	}
 	return output;
-}
-
-void Chunk::generateMesh()
-{	
-	srand(time(NULL));
-	for (int x = 0; x < CHUNK_SIZE; x++)
-	{
-		for (int y = 0; y < WORLD_HEIGHT; y++)
-		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
-			{				
-				if (block_visible(x, y, z) && _blocks[x][y][z].isActive()) {
-					glm::vec4 color = glm::vec4((float)rand() / (float)RAND_MAX, (float)rand()
-						/ (float)RAND_MAX, (float)rand() / (float)RAND_MAX, 1.0f);
-
-					BlockFaces nearbyFaces = getBlocksNearby(x, y, z);
-
-					// Back face
-					if (!nearbyFaces.back) {
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-					}
-
-					//Front face
-					if (!nearbyFaces.front) {
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
-					}
-
-					// Left Face
-					if (!nearbyFaces.left) {
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					}
-
-					// Right face
-					if (!nearbyFaces.right) {
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-					}
-					
-					//Bottom face
-					if (!nearbyFaces.down) {
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, -0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, -0.5f + y, -0.5f + z), color);
-					}
-
-					// Top face
-					if (!nearbyFaces.top) {
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(0.5f + x, 0.5f + y, 0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, -0.5f + z), color);
-						_mesh->addVertex(glm::vec3(-0.5f + x, 0.5f + y, 0.5f + z), color);
-					}
-					_blocksCount++;
-				}
-			}
-		}
-	}
 }
 
 void Chunk::experimental_genMesh()

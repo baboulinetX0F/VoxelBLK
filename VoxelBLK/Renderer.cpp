@@ -12,6 +12,7 @@ Renderer::Renderer()
 	}	
 }
 
+
 Renderer::~Renderer()
 {
 	if (_window != nullptr)
@@ -21,12 +22,16 @@ Renderer::~Renderer()
 
 void Renderer::initWindow(const char * title, int width, int height)
 {
+	glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+	_loadingContext = glfwCreateWindow(1, 1, "Thread Window", NULL, NULL);
+	
+	glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	_window = glfwCreateWindow(width, height, title, nullptr, _loadingContext);
 	if (_window == nullptr)
 	{
 		std::cerr << "ERROR : Cannot create window" << std::endl;
@@ -108,7 +113,7 @@ GLuint Renderer::createVBOAllocated(GLuint VAO, GLuint dataSize)
 	glGenBuffers(1, &newVBO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, newVBO);
-	glBufferData(GL_ARRAY_BUFFER, dataSize, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, dataSize, nullptr, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	return newVBO;

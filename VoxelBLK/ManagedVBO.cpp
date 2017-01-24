@@ -5,11 +5,12 @@ ManagedVBO::ManagedVBO(GLuint VAO, unsigned int blockSize, unsigned int blockCou
 	glGenBuffers(1, &_VBO);
 	_VAO = VAO;
 	_blockSize = blockSize;
+	_blockCount = blockCount;
 	_bufferSize = blockSize * blockCount;
 	
 	glBindVertexArray(_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-	glBufferData(GL_ARRAY_BUFFER, _bufferSize, NULL, GL_STREAM_DRAW);	
+	glBufferData(GL_ARRAY_BUFFER, _bufferSize, NULL, GL_STREAM_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -23,17 +24,17 @@ ManagedVBO::~ManagedVBO()
 	glDeleteBuffers(1, &_VBO);
 }
 
-GLuint ManagedVBO::GetVAO()
+GLuint ManagedVBO::GetVAO() const
 {
 	return _VAO;
 }
 
-GLuint ManagedVBO::GetVBO()
+GLuint ManagedVBO::GetVBO() const
 {
 	return _VBO;
 }
 
-const unsigned int ManagedVBO::GetBlockSize()
+unsigned int ManagedVBO::GetBlockSize() const
 {
 	return _blockSize;
 }
@@ -73,5 +74,10 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 void ManagedVBO::UnloadData(unsigned int index)
 {
 	_blocksAvailable.push(index);
+	glBindVertexArray(_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
+	glBufferSubData(GL_ARRAY_BUFFER, index * _blockSize, _blockSize, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 

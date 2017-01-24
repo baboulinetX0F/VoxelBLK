@@ -3,6 +3,7 @@
 #define GLEW_STATIC
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
+#include <mutex>
 
 #include "Shader.h"
 #include "Vertex.h"
@@ -13,6 +14,14 @@ enum RenderMode
 {
 	RENDER_WIREFRAME,
 	RENDER_FILL
+};
+
+struct UploadJob
+{
+	ManagedVBO target;
+	GLfloat* data;
+	GLintptr offset;
+	GLsizeiptr size;
 };
 
 
@@ -35,7 +44,6 @@ class Renderer
 	GLuint createVBOAllocated(GLuint VAO, GLuint dataSize);
 	unsigned int LoadToManagedVBO(ManagedVBO* vbo, GLfloat* data, VertexAttrib* attrib, unsigned int size);
 
-	// A rename
 	void Render(ManagedVBO* vbo, unsigned int vtxcount);
 	void RenderSkybox();	
 
@@ -50,16 +58,20 @@ class Renderer
 	int getVerticesRendered() const;
 	GLfloat GetRenderingDistance() const;
 
+	GLFWwindow* _loadingContext;
+
  private:
 	GLFWwindow* _window;
 	int _windowWidth, _windowHeight;
 	Camera* _camera;
-	glm::mat4 _projection;
+	glm::mat4 _projection;	
 
 	Shader* _defaultShader;
 	CSkybox* _skybox;
 	GLuint _occlusionQuery;
 	GLuint _textureAtlas;
+
+	std::stack<UploadJob> _uploadQueue;
 		
 	// Debug Informations
 	double _lastTime;

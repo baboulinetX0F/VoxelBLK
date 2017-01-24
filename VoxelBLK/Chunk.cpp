@@ -30,21 +30,20 @@ bool Chunk::isEmpty()
 
 void Chunk::loadChunk(ChunkManager * manager, Renderer* renderer)
 {
-	experimental_genMesh();	
+	//generateMesh();	
 	if (renderer->LoadToManagedVBO(manager->getVBO(), GetVerticesData(), VERTEX_DEFAULT_ATTRIBS,
 		_vertices.size() * VERTEX_COMPONENT_COUNT * sizeof(GLfloat)) != -1)
 	{
 		_loaded = true;
+		_state = LOADED;
+		_vertices.clear();
 		std::cout << "Loaded.\n";
 	}
-	else
+	else {
 		_loaded = false;
+		_state = MESH_GENERATED;
+	}
 }
-
-void Chunk::unloadChunk(Renderer * renderer)
-{
-}
-
 
 void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 {
@@ -71,7 +70,7 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 		srand(time(NULL));		
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
-			for (int y = 0; y < WORLD_HEIGHT; y++)
+			for (int y = 0; y < CHUNK_SIZE; y++)
 			{
 				for (int z = 0; z < CHUNK_SIZE; z++)
 				{
@@ -90,7 +89,7 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 					else if (genMode == GEN_SPHERE)
 					{
 						if (sqrt((float)(x - CHUNK_SIZE / 2)*(x - CHUNK_SIZE / 2)
-							+ (y - WORLD_HEIGHT / 2)*(y - WORLD_HEIGHT / 2)
+							+ (y - CHUNK_SIZE / 2)*(y - CHUNK_SIZE / 2)
 							+ (z - CHUNK_SIZE / 2)*(z - CHUNK_SIZE / 2)) <= CHUNK_SIZE / 2)
 						{
 							_blocks[x][y][z].setActive(true);
@@ -103,6 +102,11 @@ void Chunk::generateChunk(CHUNK_GEN_MODE genMode, ChunkManager* _manager)
 			}
 		}
 	}
+}
+
+CHUNK_STATE Chunk::getState() const
+{
+	return _state;
 }
 
 unsigned int Chunk::GetVerticesCount() const
@@ -125,9 +129,8 @@ GLfloat * Chunk::GetVerticesData() const
 	return output;
 }
 
-void Chunk::experimental_genMesh()
-{
-	// TODO : Move struct away from local context
+void Chunk::generateMesh()
+{	
 	struct Quad
 	{
 		int x;
@@ -146,7 +149,7 @@ void Chunk::experimental_genMesh()
 	std::vector<Quad> quads;	
 	for (int z = 0; z < CHUNK_SIZE; z++)
 	{
-		for (int y = 0; y < WORLD_HEIGHT; y++)
+		for (int y = 0; y < CHUNK_SIZE; y++)
 		{
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{				
@@ -202,7 +205,7 @@ void Chunk::experimental_genMesh()
 	std::vector<Quad> z_quads;
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
-		for (int y = 0; y < WORLD_HEIGHT; y++)
+		for (int y = 0; y < CHUNK_SIZE; y++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
@@ -254,7 +257,7 @@ void Chunk::experimental_genMesh()
 	// Pass for Z-Axis quads
 	bool y_seg = false;
 	std::vector<Quad> y_quads;
-	for (int y = 0; y < WORLD_HEIGHT; y++)
+	for (int y = 0; y < CHUNK_SIZE; y++)
 	{
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
@@ -364,7 +367,7 @@ void Chunk::experimental_genMesh()
 
 	color = MESH_DEFAULT_COLOR;
 	
-	GLfloat textureIndex = 0.0f;	
+	GLfloat textureIndex = 2.0f;	
 
 	// Transform quads into triangles-based quads and send vertices to the mesh object
 	BlockFaces nearBlocks = BlockFaces{ true,true,true,true,true,true };
@@ -497,12 +500,14 @@ void Chunk::experimental_genMesh()
 	{		
 		_vertices[i].position.x += _position.x * CHUNK_SIZE;
 		_vertices[i].position.z += _position.y * CHUNK_SIZE;
-	}	
+	}
+
+	_state = MESH_GENERATED;
 }
 
 bool Chunk::block_visible(int x, int y, int z)
 {		
-	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< WORLD_HEIGHT - 1 && z > 0 && z< CHUNK_SIZE - 1) {
+	if (x > 0 && x < CHUNK_SIZE - 1 && y > 0 && y< CHUNK_SIZE - 1 && z > 0 && z< CHUNK_SIZE - 1) {
 		if (_blocks[x + 1][y][z].isActive() && _blocks[x - 1][y][z].isActive()) {
 			if (_blocks[x][y + 1][z].isActive() && _blocks[x][y - 1][z].isActive()) {
 				if (_blocks[x][y][z+1].isActive() && _blocks[x][y][z-1].isActive()) {
@@ -521,7 +526,7 @@ BlockFaces Chunk::getBlocksNearby(int x, int y, int z)
 		output.down = false;
 	else
 		output.down = _blocks[x][y - 1][z].isActive();
-	if (y == WORLD_HEIGHT - 1)
+	if (y == CHUNK_SIZE - 1)
 		output.top = false;
 	else
 		output.top = _blocks[x][y + 1][z].isActive();

@@ -43,20 +43,34 @@ void ChunkManager::GenerateChunks(CHUNK_GEN_MODE d)
 }
 
 void ChunkManager::Update(Renderer* renderer)
-{
+{	
+	try
+	{
+		auto status = _calculationThread.wait_for(std::chrono::seconds(0));
+		if (status == std::future_status::ready) {
+			auto func = std::bind(&ChunkManager::UpdateMeshes, this);
+			_calculationThread = std::async(std::launch::async, func, 0);
+		}
+	}
+	catch (const std::future_error& e) {
+		std::cout << "No async thread launched\n";
+		auto func = std::bind(&ChunkManager::UpdateMeshes, this);
+		_calculationThread = std::async(std::launch::async, func, 0);
+	}
+			
 	for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 	{
 		for (int x = 0; x < CHUNKS_NUMBER_X; x++)  
 		{
-			if (IsChunkVisible(x, y) && !_chunks[x][y]->isLoaded() && !_chunks[x][y]->isEmpty())
+			if (!IsChunkVisible(x, y) && _chunks[x][y]->getState() == CHUNK_STATE::LOADED)
 			{
-				std::cout << "Loading Chunk...\n";
-				_chunks[x][y]->loadChunk(this, renderer);				
+				UnloadChunk(_chunks[x][y]);
 			}
-			else if (!IsChunkVisible(x, y))
-			{
-					_chunks[x][y]->unloadChunk(renderer);
-			}			
+			if (IsChunkVisible(x, y) && !_chunks[x][y]->isEmpty() && _chunks[x][y]->getState() == CHUNK_STATE::MESH_GENERATED) {
+				std::cout << "Loading Chunk...\n";
+				_chunks[x][y]->loadChunk(this, renderer);
+			}
+					
 		}
 	}
 }
@@ -91,4 +105,43 @@ ManagedVBO * ChunkManager::getVBO()
 bool ChunkManager::IsChunkVisible(int x, int y)
 {
 	return true;
+}
+
+void ChunkManager::UnloadChunk(Chunk* chunk)
+{
+	//_chunksVBO->UnloadData()
+}
+
+void ChunkManager::UpdateMeshes()
+{
+	for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
+	{
+		for (int x = 0; x < CHUNKS_NUMBER_X; x++)
+		{
+			if (IsChunkVisible(x, y) && !_chunks[x][y]->isEmpty() && _chunks[x][y]->getState() == CHUNK_STATE::UNLOADED)
+			{				
+				std::cout << "Generating Chunk...\n";
+				_chunks[x][y]->generateMesh();
+			}			
+		}
+	}
+}
+
+void ChunkManager::UpdateVBO(Renderer* renderer)
+{		
+	for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
+	{
+		for (int x = 0; x < CHUNKS_NUMBER_X; x++)
+		{
+			if (!IsChunkVisible(x, y) && _chunks[x][y]->getState() == CHUNK_STATE::LOADED)
+			{
+				UnloadChunk(_chunks[x][y]);
+			}
+			if (IsChunkVisible(x, y) && !_chunks[x][y]->isEmpty() && _chunks[x][y]->getState() == CHUNK_STATE::MESH_GENERATED) {
+				std::cout << "Loading Chunk...\n";
+				_chunks[x][y]->loadChunk(this, renderer);
+			}
+
+		}
+	}
 }

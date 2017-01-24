@@ -62,7 +62,7 @@ void Game::gameLoop()
 	glm::vec3 nbl = nc - (up * (Hnear / 2)) - (right * (Wnear / 2));
 	glm::vec3 nbr = nc - (up * (Hnear / 2)) + (right * (Wnear / 2));	
 	*/		
-	
+			
 	while (!glfwWindowShouldClose(_renderer->getWindow()))
 	{
 		_renderer->beginFrame();

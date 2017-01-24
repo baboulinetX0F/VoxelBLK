@@ -12,7 +12,7 @@ Block::~Block()
 {
 }
 
-bool Block::isActive()
+bool Block::isActive() const
 {
 	return _active;
 }

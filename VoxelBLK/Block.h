@@ -23,7 +23,7 @@ public:
 	Block();
 	~Block();
 
-	bool isActive();	
+	bool isActive() const;	
 	BlockType getType() const;
 
 	void setActive(bool state);

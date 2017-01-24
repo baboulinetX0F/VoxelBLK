@@ -1,5 +1,9 @@
 #pragma once
 
+#include <thread>
+#include <future>
+#include <chrono>
+
 #include "Chunk.h"
 #include "Renderer.h"
 #include "SimplexNoise.h"
@@ -24,13 +28,21 @@ public:
 
 private:
 	Chunk* _chunks[CHUNKS_NUMBER_X][CHUNKS_NUMBER_Y];
+	std::vector<Chunk*> _chunksVec;
 	SimplexNoise _simplex;
 	ManagedVBO* _chunksVBO;
-	GLuint _chunksVAO;	
-
+	GLuint _chunksVAO;
+	
+	std::future<void> _calculationThread;
+	
 	int _chunkCount = 0;
 	
 	void Initialize();
 	void InitializeBuffers(Renderer* renderer);
-	bool IsChunkVisible(int x, int y);		
+	bool IsChunkVisible(int x, int y);
+
+	void UnloadChunk(Chunk* chunk);
+
+	void UpdateMeshes();
+	void UpdateVBO(Renderer* renderer);
 };

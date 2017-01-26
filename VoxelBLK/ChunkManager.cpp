@@ -17,8 +17,8 @@ void ChunkManager::Initialize()
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{		
 		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
-		{
-			_chunks[x][y] = new Chunk(glm::vec2(x,y));
+		{			
+			_chunks.push_back(new Chunk(glm::vec2(x, y)));
 			_chunkCount++;
 		}
 	}	
@@ -36,8 +36,8 @@ void ChunkManager::GenerateChunks(CHUNK_GEN_MODE d)
 	for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 	{
 		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
-		{
-			_chunks[x][y]->generateChunk(d, this);
+		{			
+			_chunks[x + (y * CHUNKS_NUMBER_Y)]->generateChunk(d, this);
 		}
 	}
 }
@@ -62,13 +62,13 @@ void ChunkManager::Update(Renderer* renderer)
 	{
 		for (int x = 0; x < CHUNKS_NUMBER_X; x++)  
 		{
-			if (!IsChunkVisible(x, y) && _chunks[x][y]->getState() == CHUNK_STATE::LOADED)
+			if (!IsChunkVisible(x, y) && _chunks[x + (y * CHUNKS_NUMBER_Y)]->getState() == CHUNK_STATE::LOADED)
 			{
-				UnloadChunk(_chunks[x][y]);
+				UnloadChunk(_chunks[x + (y * CHUNKS_NUMBER_Y)]);
 			}
-			if (IsChunkVisible(x, y) && !_chunks[x][y]->isEmpty() && _chunks[x][y]->getState() == CHUNK_STATE::MESH_GENERATED) {
+			if (IsChunkVisible(x, y) && !_chunks[x + (y * CHUNKS_NUMBER_Y)]->isEmpty() && _chunks[x + (y * CHUNKS_NUMBER_Y)]->getState() == CHUNK_STATE::MESH_GENERATED) {
 				std::cout << "Loading Chunk...\n";
-				_chunks[x][y]->loadChunk(this, renderer);
+				_chunks[x + (y * CHUNKS_NUMBER_Y)]->loadChunk(this, renderer);
 			}
 					
 		}
@@ -82,9 +82,9 @@ void ChunkManager::Render(Renderer * renderer)
 	{
 		for (int y = 0; y < CHUNKS_NUMBER_Y; y++)
 		{
-			if (_chunks[x][y]->isLoaded())
+			if (_chunks[x + (y * CHUNKS_NUMBER_Y)]->isLoaded())
 			{
-				vtxCount += _chunks[x][y]->GetVerticesCount();
+				vtxCount += _chunks[x + (y * CHUNKS_NUMBER_Y)]->GetVerticesCount();
 			}
 		}
 	}
@@ -118,10 +118,10 @@ void ChunkManager::UpdateMeshes()
 	{
 		for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 		{
-			if (IsChunkVisible(x, y) && !_chunks[x][y]->isEmpty() && _chunks[x][y]->getState() == CHUNK_STATE::UNLOADED)
+			if (IsChunkVisible(x, y) && !_chunks[x + (y * CHUNKS_NUMBER_Y)]->isEmpty() && _chunks[x + (y * CHUNKS_NUMBER_Y)]->getState() == CHUNK_STATE::UNLOADED)
 			{				
 				std::cout << "Generating Chunk...\n";
-				_chunks[x][y]->generateMesh();
+				_chunks[x + (y * CHUNKS_NUMBER_Y)]->generateMesh();
 			}			
 		}
 	}
@@ -133,13 +133,13 @@ void ChunkManager::UpdateVBO(Renderer* renderer)
 	{
 		for (int x = 0; x < CHUNKS_NUMBER_X; x++)
 		{
-			if (!IsChunkVisible(x, y) && _chunks[x][y]->getState() == CHUNK_STATE::LOADED)
+			if (!IsChunkVisible(x, y) && _chunks[x + (y * CHUNKS_NUMBER_Y)]->getState() == CHUNK_STATE::LOADED)
 			{
-				UnloadChunk(_chunks[x][y]);
+				UnloadChunk(_chunks[x + (y * CHUNKS_NUMBER_Y)]);
 			}
-			if (IsChunkVisible(x, y) && !_chunks[x][y]->isEmpty() && _chunks[x][y]->getState() == CHUNK_STATE::MESH_GENERATED) {
+			if (IsChunkVisible(x, y) && !_chunks[x + (y * CHUNKS_NUMBER_Y)]->isEmpty() && _chunks[x + (y * CHUNKS_NUMBER_Y)]->getState() == CHUNK_STATE::MESH_GENERATED) {
 				std::cout << "Loading Chunk...\n";
-				_chunks[x][y]->loadChunk(this, renderer);
+				_chunks[x + (y * CHUNKS_NUMBER_Y)]->loadChunk(this, renderer);
 			}
 
 		}

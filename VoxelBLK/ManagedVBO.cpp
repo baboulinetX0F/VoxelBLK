@@ -68,7 +68,11 @@ unsigned int ManagedVBO::LoadData(GLfloat * data, VertexAttrib* attrib, unsigned
 		return 0;
 	}
 	else
+	{
+		std::cerr << "ERROR : The VBO is already full\n";
 		return -1;
+	}
+		
 }
 
 void ManagedVBO::UnloadData(unsigned int index)

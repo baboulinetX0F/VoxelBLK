@@ -36,20 +36,19 @@ class Chunk
   void generateChunk(CHUNK_GEN_MODE fill, ChunkManager* _manager);
   CHUNK_STATE getState() const;
 
-  unsigned int GetVerticesCount() const;  
+  unsigned int GetVerticesCount() const;
+  GLfloat* GetVerticesData() const;
   
  private:
     Block _blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]; 
     glm::vec2 _position = glm::vec2(0, 0);
 	std::vector<Vertex> _vertices;
-
-    int _blocksCount = 0;
-    bool _loaded = false;
-    bool _empty = true;
 	CHUNK_STATE _state = UNLOADED;
+	bool _loaded = false;
+	bool _empty = true;
 
-	GLfloat* GetVerticesData() const ;   
+    int _blocksCount = 0;   
+	
     bool block_visible(int x, int y, int z);
-
     BlockFaces getBlocksNearby(int x, int y, int z);
 };

@@ -3,6 +3,7 @@
 #include <thread>
 #include <future>
 #include <chrono>
+#include <map>
 
 #include "Chunk.h"
 #include "Renderer.h"
@@ -26,14 +27,14 @@ public:
 	int getNoiseValue(float x, float z);
 	ManagedVBO* getVBO();
 
-private:
-	Chunk* _chunks[CHUNKS_NUMBER_X][CHUNKS_NUMBER_Y];
-	std::vector<Chunk*> _chunksVec;
+private:	
+	std::vector<Chunk*> _chunks;
 	SimplexNoise _simplex;
 	ManagedVBO* _chunksVBO;
 	GLuint _chunksVAO;
 	
 	std::future<void> _calculationThread;
+	std::map<Chunk*, unsigned int> _chunksLoaded;
 	
 	int _chunkCount = 0;
 	
